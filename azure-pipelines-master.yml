@@ -1,0 +1,54 @@
+trigger:
+- master
+
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+  demands:
+  - npm
+  - node.js
+  - java
+
+variables:
+  artifactName: 'SPFxCalendar'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build job
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: 10.x
+        checkLatest: true
+    - task: Npm@1
+      inputs:
+        command: 'install'
+        workingDir: 'source'
+    - task: Gulp@1
+      inputs:
+        gulpFile: 'source/gulpfile.js'
+        targets: 'bundle'
+        arguments: '--ship'
+        enableCodeCoverage: false
+        workingDirectory: 'source'
+    - task: Gulp@1
+      inputs:
+        gulpFile: 'source/gulpfile.js'
+        targets: 'package-solution'
+        arguments: '--ship'
+        enableCodeCoverage: false
+        workingDirectory: 'source'
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: '$(Build.SourcesDirectory)/source/sharepoint/solution'
+        contents: '*.sppkg'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: '$(artifactName)'
+        publishLocation: 'Container'
