@@ -35,11 +35,11 @@ export class CalendarService {
     return array;
   }
 
-  public getEvents(listTitle: string, date: Date): Promise<Array<IEvent>> {
+  public getEvents(listId: string, date: Date): Promise<Array<IEvent>> {
     return this.context.spHttpClient
       .get(
         this.context.pageContext.web.serverRelativeUrl +
-        `/_api/web/lists/getbytitle('${encodeURIComponent(listTitle)}')/items` +
+        `/_api/web/lists/getbyid(guid'${listId}')/items` +
         `?$filter=` +
         `EventDate ge datetime'${DateUtil.beginOfWeek(DateUtil.beginOfMonth(date)).toISOString()}' and  ` +
         `EventDate lt datetime'${DateUtil.nextDay(DateUtil.endOfWeek(DateUtil.endOfMonth(date))).toISOString()}'` +

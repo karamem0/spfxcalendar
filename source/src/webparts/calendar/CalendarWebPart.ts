@@ -3,9 +3,11 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneDropdown,
+  IPropertyPaneDropdownOption
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -13,17 +15,20 @@ import { Calendar } from './components/Calendar';
 import { ICalendarProps } from './models/ICalendar';
 
 export interface ICalendarWebPartProps {
-  listTitle: string;
+  listId: string;
 }
 
 export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebPartProps> {
+
+  private listNameDropdownOptions: IPropertyPaneDropdownOption[];
+  private listNameDropdownDisabled: boolean = true;
 
   public render(): void {
     const element: React.ReactElement<ICalendarProps> = React.createElement(
       Calendar,
       {
         context: this.context,
-        listTitle: this.properties.listTitle
+        listId: this.properties.listId
       }
     );
 
@@ -32,6 +37,33 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
+  }
+
+  protected onPropertyPaneConfigurationStart(): void {
+    if (this.listNameDropdownOptions) {
+      return;
+    }
+    this.context.spHttpClient
+      .get(
+        this.context.pageContext.web.serverRelativeUrl +
+        `/_api/web/lists?$filter=BaseTemplate eq 106`,
+        SPHttpClient.configurations.v1)
+      .then((response: SPHttpClientResponse) => {
+        return response.json();
+      })
+      .then((data: any) => {
+        if (data.error) {
+          throw data.error;
+        }
+        this.listNameDropdownDisabled = false;
+        this.listNameDropdownOptions = data.value.map((item: any) => {
+          return {
+            key: item.Id,
+            text: item.Title
+          };
+        });
+        this.context.propertyPane.refresh();
+      });
   }
 
   protected get dataVersion(): Version {
@@ -45,8 +77,10 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
           groups: [
             {
               groupFields: [
-                PropertyPaneTextField('listTitle', {
-                  label: strings.ListTitleFieldLabel
+                PropertyPaneDropdown('listId', {
+                  label: strings.ListNameLabel,
+                  options: this.listNameDropdownOptions,
+                  disabled: this.listNameDropdownDisabled
                 })
               ]
             }

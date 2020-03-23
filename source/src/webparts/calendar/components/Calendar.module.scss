@@ -24,20 +24,23 @@
     }
     .date {
       border: solid 1px rgb(229, 229, 229);
-      height: 90px;
       width: 14.28571%;
       text-align: left;
       vertical-align: top;
       .day {
-        margin: 3px 0 0 3px;
+        margin: 3px 3px 0 3px;
       }
-      .event {
-        font-size: small;
-        margin: 0 3px 0 3px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      .scroll {
+        height: 60px;
+        overflow-y: auto;
+        margin: 0 3px 3px 3px;
+        .event {
+          font-size: small;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        }
     }
   }
 }

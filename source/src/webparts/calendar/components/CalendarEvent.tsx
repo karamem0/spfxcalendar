@@ -41,7 +41,7 @@ export class CalendarEvent extends React.Component<ICalendarEventProps, ICalenda
                 <div><small>
                   {
                     this.props.event.allDayEvent
-                      ? strings.AllDaysFieldLabel
+                      ? strings.AllDaysLabel
                       : dateFormat(this.props.event.beginDate, strings.DateTimeFormat) + ' - ' + 
                         dateFormat(this.props.event.endDate, strings.DateTimeFormat)
                   }

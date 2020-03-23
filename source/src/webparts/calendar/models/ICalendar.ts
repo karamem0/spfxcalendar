@@ -4,7 +4,7 @@ import { IEvent } from '../models/IEvent';
 
 export interface ICalendarProps {
   context: IWebPartContext;
-  listTitle: string;
+  listId: string;
 }
 
 export interface ICalendarState {

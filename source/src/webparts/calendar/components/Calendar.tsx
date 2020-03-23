@@ -69,7 +69,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
   }
 
   public componentDidMount(): void {
-    this.service.getEvents(this.props.listTitle, this.state.date)
+    this.service.getEvents(this.props.listId, this.state.date)
       .then((events: Array<IEvent>) => {
         this.setState({
           events: events,
@@ -82,8 +82,8 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
   }
 
   public componentDidUpdate(prevProps: ICalendarProps, prevState: ICalendarState): void {
-    if (this.props.listTitle !== prevProps.listTitle) {
-      this.service.getEvents(this.props.listTitle, this.state.date)
+    if (this.props.listId !== prevProps.listId) {
+      this.service.getEvents(this.props.listId, this.state.date)
         .then((events: Array<IEvent>) => {
           this.setState({
             events: events,
@@ -98,7 +98,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
   private onPrevMonth(): void {
     const date = DateUtil.prevMonth(this.state.date);
-    this.service.getEvents(this.props.listTitle, date)
+    this.service.getEvents(this.props.listId, date)
       .then((events: Array<IEvent>) => {
         this.setState({
           date: date,
@@ -113,7 +113,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
   private onNextMonth(): void {
     const date = DateUtil.nextMonth(this.state.date);
-    this.service.getEvents(this.props.listTitle, date)
+    this.service.getEvents(this.props.listId, date)
       .then((events: Array<IEvent>) => {
         this.setState({
           date: date,
