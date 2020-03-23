@@ -1,5 +1,6 @@
 trigger:
 - master
+- refs/tags/*
 
 pr: none
 
@@ -52,3 +53,21 @@ stages:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: '$(artifactName)'
         publishLocation: 'Container'
+- stage: Release
+  displayName: Release stage
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  jobs:
+  - job: Release
+    displayName: Release job
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: '$(artifactName)'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: GitHubRelease@1
+      inputs:
+        gitHubConnection: GitHub
+        addChangeLog: false
+        assets: '$(System.ArtifactsDirectory)/$(artifactName)/*'

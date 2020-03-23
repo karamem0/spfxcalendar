@@ -21,11 +21,13 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
     return (
       <td className={styles.date}>
         <div className={styles.day}>{this.props.date.getDate()}</div>
+        <div className={styles.scroll}>
         {
           this.service.createEventPropsArray(this.props).map((props) => {
             return <CalendarEvent {...props}></CalendarEvent>;
           })
         }
+        </div>
       </td>
     );
   }

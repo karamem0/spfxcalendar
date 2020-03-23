@@ -1,8 +1,8 @@
 define([], function () {
   return {
-    "ListTitleFieldLabel": "List Title",
+    "ListNameLabel": "List Name",
     "CalendarHeaderLabel": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
-    "AllDaysFieldLabel": "All days",
+    "AllDaysLabel": "All days",
     "CalendarFormat": "mmm yyyy",
     "DateTimeFormat": "m/d/yyyy HH:MM"
   }
