@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 
-import {
-  ICalendarHeadProps,
-  ICalendarHeadState
-} from '../models/ICalendarHead';
+export interface ICalendarHeadProps {
+  name: string;
+}
+
+export interface ICalendarHeadState { }
 
 export class CalendarHead extends React.Component<ICalendarHeadProps, ICalendarHeadState> {
 

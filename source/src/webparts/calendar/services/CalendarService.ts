@@ -1,66 +1,59 @@
 import { IWebPartContext } from "@microsoft/sp-webpart-base";
-import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { SPHttpClient } from '@microsoft/sp-http';
 
-import * as strings from 'CalendarWebPartStrings';
-
-import { ICalendarState } from '../models/ICalendar';
-import { ICalendarHeadProps } from '../models/ICalendarHead';
-import { ICalendarWeekProps } from '../models/ICalendarWeek';
-import { IEvent } from '../models/IEvent';
-import { DateUtil } from '../utils/DateUtil';
+import { Event } from '../models/Event';
+import { RecurrenceConverter } from "../utils/RecurrenceConverter";
+import { RecurrenceParser } from "../utils/RecurrenceParser";
+import { DateTime } from '../utils/DateTime';
 
 export class CalendarService {
 
   constructor(private context: IWebPartContext) { }
 
-  public createHeadPropsArray(): Array<ICalendarHeadProps> {
-    return strings.CalendarHeaderLabel.split(',').map(value => {
-      return { name: value };
-    });
-  }
-
-  public createWeekPropsArray(state: ICalendarState): Array<ICalendarWeekProps> {
-    const beginDate = DateUtil.beginOfWeek(DateUtil.beginOfMonth(state.date));
-    const endDate = DateUtil.endOfWeek(DateUtil.endOfMonth(state.date));
-    const array: Array<ICalendarWeekProps> = [];
-    for (let date = new Date(beginDate.getTime()); date < endDate; date.setDate(date.getDate() + 7)) {
-      array.push({
-        beginDate: new Date(date.getTime()),
-        endDate: DateUtil.endOfWeek(date),
-        events: state.events.filter((event) =>
-          event.beginDate >= date &&
-          event.beginDate < DateUtil.nextDay(DateUtil.endOfWeek(date)))
-      });
-    }
-    return array;
-  }
-
-  public getEvents(listId: string, date: Date): Promise<Array<IEvent>> {
-    return this.context.spHttpClient
-      .get(
-        this.context.pageContext.web.serverRelativeUrl +
-        `/_api/web/lists/getbyid(guid'${listId}')/items` +
-        `?$filter=` +
-        `EventDate ge datetime'${DateUtil.beginOfWeek(DateUtil.beginOfMonth(date)).toISOString()}' and  ` +
-        `EventDate lt datetime'${DateUtil.nextDay(DateUtil.endOfWeek(DateUtil.endOfMonth(date))).toISOString()}'` +
-        `&$orderby=EventDate`,
-        SPHttpClient.configurations.v1)
-      .then((response: SPHttpClientResponse) => {
-        return response.json();
-      })
-      .then((data: any) => {
+  public async getEvents(listId: string, date: Date): Promise<Array<Event>> {
+    const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().local().toDate();
+    const calendarEndDate = new DateTime(date).endOfMonth().endOfWeek().nextDay().local().toDate();
+    return new Promise<Array<Event>>((resolve: (value?: Array<Event>) => void) => resolve([]))
+      .then(async (value: Array<Event>) => {
+        const response = await this.context.spHttpClient
+          .get(this.context.pageContext.web.serverRelativeUrl +
+            `/_api/web/lists/getbyid(guid'${listId}')/items` +
+            `?$filter=` +
+            `EventDate ge datetime'${calendarBeginDate.toISOString()}' and  ` +
+            `EventDate lt datetime'${calendarEndDate.toISOString()}' and ` +
+            `fRecurrence eq 0` +
+            `&$orderby=EventDate`, SPHttpClient.configurations.v1);
+        const data = await response.json();
         if (data.error) {
           throw data.error;
         }
-        return data.value.map((item: any) => {
-          return {
-            id: item.Id,
-            title: item.Title,
-            beginDate: new Date(Date.parse(item.EventDate)),
-            endDate: new Date(Date.parse(item.EndDate)),
-            allDayEvent: item.fAllDayEvent
-          };
+        data.value.forEach((item: any) => value.push(new Event(item)));
+        return value;
+      })
+      .then(async (value: Array<Event>) => {
+        const response = await this.context.spHttpClient
+          .get(this.context.pageContext.web.serverRelativeUrl +
+            `/_api/web/lists/getbyid(guid'${listId}')/items` +
+            `?$select=*,RecurrenceData` +
+            `&$filter=` +
+            `EventDate lt datetime'${calendarEndDate.toISOString()}' and ` +
+            `fRecurrence eq 1` +
+            `&$orderby=EventDate`, SPHttpClient.configurations.v1);
+        const data = await response.json();
+        if (data.error) {
+          throw data.error;
+        }
+        data.value.forEach((item: any) => {
+          console.log(item);
+          RecurrenceConverter
+            .convert(RecurrenceParser.parse(item.RecurrenceData), date, new Date(Date.parse(item.EventDate)))
+            .forEach((recurrenceDate: Date) => value.push(new Event(item, recurrenceDate)));
         });
+        return value;
+      })
+      .then((value: Array<Event>) => {
+        console.log(value);
+        return value;
       });
   }
 

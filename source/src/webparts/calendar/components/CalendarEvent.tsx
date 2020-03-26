@@ -4,12 +4,16 @@ import { Link, TeachingBubble } from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import {
-  ICalendarEventProps,
-  ICalendarEventState
-} from '../models/ICalendarEvent';
+import { Event } from '../models/Event';
+import { DateTime } from '../utils/DateTime';
 
-const dateFormat = require('dateformat') as Function;
+export interface ICalendarEventProps {
+  event: Event;
+}
+
+export interface ICalendarEventState {
+  toggle: boolean;
+}
 
 export class CalendarEvent extends React.Component<ICalendarEventProps, ICalendarEventState> {
 
@@ -29,22 +33,22 @@ export class CalendarEvent extends React.Component<ICalendarEventProps, ICalenda
           <Link href="javascript:void(0)" onClick={() => this.setState({ toggle: true })}>
             {
               this.props.event.allDayEvent
-                ? null 
-                : dateFormat(this.props.event.beginDate, 'HH:MM')
-            } {this.props.event.title}
+                ? null
+                : new DateTime(this.props.event.beginDate).format('HH:MM') + ' '
+            }
+            {this.props.event.title}
           </Link>
         </div>
         {
           this.state.toggle
             ? <TeachingBubble target={this.link} onDismiss={() => this.setState({ toggle: false })}>
                 <div>{this.props.event.title}</div>
+                {this.props.event.allDayEvent ? <div><small>{strings.AllDaysLabel}</small></div> : null }
                 <div><small>
-                  {
-                    this.props.event.allDayEvent
-                      ? strings.AllDaysLabel
-                      : dateFormat(this.props.event.beginDate, strings.DateTimeFormat) + ' - ' + 
-                        dateFormat(this.props.event.endDate, strings.DateTimeFormat)
-                  }
+                {
+                  new DateTime(this.props.event.beginDate).format(strings.DateTimeFormat) + ' - ' + 
+                  new DateTime(this.props.event.endDate).format(strings.DateTimeFormat)
+                }
                 </small></div>
               </TeachingBubble>
             : null
