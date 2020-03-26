@@ -6,10 +6,6 @@ pr: none
 
 pool:
   vmImage: 'windows-latest'
-  demands:
-  - npm
-  - node.js
-  - java
 
 variables:
   artifactName: 'SPFxCalendar'

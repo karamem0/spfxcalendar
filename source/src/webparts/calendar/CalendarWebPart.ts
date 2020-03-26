@@ -11,8 +11,7 @@ import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { Calendar } from './components/Calendar';
-import { ICalendarProps } from './models/ICalendar';
+import { ICalendarProps, Calendar } from './components/Calendar';
 
 export interface ICalendarWebPartProps {
   listId: string;
