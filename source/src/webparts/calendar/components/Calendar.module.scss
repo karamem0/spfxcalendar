@@ -40,7 +40,22 @@
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        }
+      }
     }
+  }
+}
+.callout {
+  .icon {
+    font-size: x-small;
+    margin-left: 0.5em;
+  }
+  .location {
+    font-size: small;
+  }
+  .alldays {
+    font-size: small;
+  }
+  .date {
+    font-size: small;
   }
 }
