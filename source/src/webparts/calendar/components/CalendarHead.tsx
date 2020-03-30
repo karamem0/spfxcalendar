@@ -15,7 +15,7 @@ export class CalendarHead extends React.Component<ICalendarHeadProps, ICalendarH
 
   public render(): React.ReactElement<ICalendarHeadProps> {
     return (
-      <td className={styles.head}>
+      <td className={styles.calendarhead}>
         <span>{this.props.name}</span>
       </td>
     );

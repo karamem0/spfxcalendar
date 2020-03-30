@@ -1,50 +1,80 @@
-.table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-  .thead {
-    .head {
-      text-align: center;
-      vertical-align: middle;
-      .date {
-        font-size: x-large;
-      }
-    }
-  }
-  .tbody {
-    .head {
-      border: solid 1px rgb(229, 229, 229);
-      height: 30px;
-      width: 14.28571%;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .week {
-      width: 100%;
-    }
-    .date {
-      border: solid 1px rgb(229, 229, 229);
-      width: 14.28571%;
-      text-align: left;
-      vertical-align: top;
-      .day {
-        margin: 3px 3px 0 3px;
-      }
-      .scroll {
-        height: 60px;
-        overflow-y: auto;
-        margin: 0 3px 3px 3px;
-        .event {
-          font-size: small;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+.calendar {
+  table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    thead {
+      .head {
+        text-align: center;
+        .icon {
+          vertical-align: middle;
         }
+        .date {
+          font-size: x-large;
+          vertical-align: middle;
+        }
+      }
+    }
+    tbody {
+      .head {
+        width: 100%;
       }
     }
   }
 }
+.calendarhead {
+  border: solid 1px rgb(229, 229, 229);
+  height: 30px;
+  width: 14.28571%;
+  text-align: center;
+}
+.calendarweek {
+  width: 100%;
+}
+.calendardate {
+  border: solid 1px rgb(229, 229, 229);
+  width: 14.28571%;
+  text-align: left;
+  vertical-align: top;
+  .day {
+    margin: 3px 3px 0 3px;
+  }
+  .scroll {
+    height: 60px;
+    overflow-y: auto;
+    margin: 0 3px 3px 3px;
+  }
+}
+.calendarevent {
+  .event {
+    font-size: small;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
 .callout {
+  max-width: 240px;
+  padding: 12px;
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i {
+      font-size: x-small;
+    }
+  }
+  .description {
+    .button {
+      font-size: small;
+      width: 25%;
+      div {
+        justify-content: center;
+      }
+    }
+  }
+}
+.bubble {
   .icon {
     font-size: x-small;
     margin-left: 0.5em;

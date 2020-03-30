@@ -29,7 +29,7 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
         return { event: event };
       });
     return (
-      <td className={styles.date}>
+      <td className={styles.calendardate}>
         <div className={styles.day}>{this.props.date.getDate()}</div>
         <div className={styles.scroll}>
           {
