@@ -33,7 +33,7 @@ export class CalendarWeek extends React.Component<ICalendarWeekProps, ICalendarW
       });
     }
     return (
-      <tr className={styles.week}>
+      <tr className={styles.calendarweek}>
         {
           datePropsArray.map((props) => {
             return <CalendarDate key={dateFormat(props.date, 'yyyymmdd')} {...props}></CalendarDate>;

@@ -12,25 +12,25 @@ export interface ICalendarEventProps {
 }
 
 export interface ICalendarEventState {
-  toggle: boolean;
+  showBubble: boolean;
 }
 
 export class CalendarEvent extends React.Component<ICalendarEventProps, ICalendarEventState> {
 
-  private link: HTMLElement;
+  private titleLink: HTMLElement;
 
   constructor(props: ICalendarEventProps) {
     super(props);
     this.state = {
-      toggle: false
+      showBubble: false
     };
   }
 
   public render(): React.ReactElement<ICalendarEventProps> {
     return (
-      <div>
-        <div className={styles.event} ref={(element) => this.link = element}>
-          <Link href="javascript:void(0)" onClick={() => this.setState({ toggle: true })}>
+      <div className={styles.calendarevent}>
+        <div className={styles.event} ref={(element) => this.titleLink = element}>
+          <Link href="javascript:void(0)" onClick={() => this.setState({ showBubble: true })}>
             {
               this.props.event.allDayEvent
                 ? null
@@ -40,9 +40,9 @@ export class CalendarEvent extends React.Component<ICalendarEventProps, ICalenda
           </Link>
         </div>
         {
-          this.state.toggle
-            ? <TeachingBubble target={this.link} onDismiss={() => this.setState({ toggle: false })}>
-                <div className={styles.callout}>
+          this.state.showBubble
+            ? <TeachingBubble target={this.titleLink} onDismiss={() => this.setState({ showBubble: false })}>
+                <div className={styles.bubble}>
                   <div>
                     {this.props.event.title}
                     {

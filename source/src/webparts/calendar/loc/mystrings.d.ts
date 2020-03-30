@@ -1,7 +1,8 @@
 declare interface ICalendarWebPartStrings {
   ListNameLabel: string;
-  CalendarHeaderLabel: string;
   AllDaysLabel: string;
+  MonthNames: string[];
+  DayNames: string[];
   CalendarFormat: string;
   DateTimeFormat: string;
 }

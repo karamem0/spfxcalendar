@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 import { IWebPartContext } from "@microsoft/sp-webpart-base";
-import { IconButton, MessageBar, MessageBarType } from 'office-ui-fabric-react';
+import { ActionButton, DefaultButton, Callout, IconButton, MessageBar, MessageBarType, getId } from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -19,12 +19,16 @@ export interface ICalendarProps {
 export interface ICalendarState {
   date: Date;
   events: Array<Event>;
+  showCallout: boolean;
   error: string;
 }
 
 export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
   private service: CalendarService;
+  private dateButton: HTMLElement;
+  private calloutLabelId: string = getId('callout-label');
+  private calloutDescriptionId: string = getId('callout-description');
 
   constructor(props: ICalendarProps) {
     super(props);
@@ -32,12 +36,13 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     this.state = {
       date: DateTime.today().toDate(),
       events: [],
+      showCallout: false,
       error: null
     };
   }
 
   public render(): React.ReactElement<ICalendarProps> {
-    const headPropsArray: Array<ICalendarHeadProps> = strings.CalendarHeaderLabel.split(',').map((value) => {
+    const headPropsArray: Array<ICalendarHeadProps> = strings.DayNames.map((value) => {
       return { name: value };
     });
     const beginDate = new DateTime(this.state.date).beginOfMonth().beginOfWeek().toDate();
@@ -54,24 +59,38 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
       });
     }
     return (
-      <div>
+      <div className={styles.calendar}>
         {
           this.state.error
             ? <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>{this.state.error}</MessageBar>
             : null
         }
-        <table className={styles.table}>
-          <thead className={styles.thead}>
+        <table>
+          <thead>
             <tr>
               <td colSpan={7} className={styles.head}>
-                <IconButton iconProps={{ iconName: 'ChevronLeft' }} onClick={this.onPrevMonth.bind(this)} ></IconButton>
-                <span className={styles.date}>{new DateTime(this.state.date).format(strings.CalendarFormat)}</span>
-                <IconButton iconProps={{ iconName: 'ChevronRight' }} onClick={this.onNextMonth.bind(this)} ></IconButton>
+                <IconButton
+                  className={styles.icon}
+                  iconProps={{ iconName: 'ChevronLeft' }}
+                  onClick={this.onPrevMonth.bind(this)}>
+                </IconButton>
+                <span ref={(element) => this.dateButton = element}>
+                  <ActionButton
+                    className={styles.date}
+                    onClick={() => this.setState({ showCallout: true })}>
+                    {new DateTime(this.state.date).format(strings.CalendarFormat)}
+                  </ActionButton>
+                </span>
+                <IconButton
+                  className={styles.icon}
+                  iconProps={{ iconName: 'ChevronRight' }}
+                  onClick={this.onNextMonth.bind(this)} >
+                </IconButton>
               </td>
             </tr>
           </thead>
-          <tbody className={styles.tbody}>
-            <tr className={styles.week}>
+          <tbody>
+            <tr className={styles.head}>
               {
                 headPropsArray.map((props) => {
                   return <CalendarHead {...props}></CalendarHead>;
@@ -85,6 +104,35 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
             }
           </tbody>
         </table>
+        {
+          this.state.showCallout
+            ? <Callout
+                className={styles.callout}
+                target={this.dateButton}
+                ariaLabelledBy={this.calloutLabelId}
+                ariaDescribedBy={this.calloutDescriptionId}
+                onDismiss={() => this.setState({ showCallout: false })}>
+                <div id={this.calloutLabelId} className={styles.label}>
+                  <IconButton
+                    iconProps={{ iconName: 'ChevronLeft' }}
+                    onClick={this.onPrevYear.bind(this)}>
+                  </IconButton>
+                  <span>{this.state.date.getFullYear()}</span>
+                  <IconButton
+                    iconProps={{ iconName: 'ChevronRight' }}
+                    onClick={this.onNextYear.bind(this)}>
+                  </IconButton>
+                </div>
+                <div id={this.calloutDescriptionId} className={styles.description}>
+                  {
+                    strings.MonthNames.map((value, index) => {
+                      return <ActionButton className={styles.button} onClick={this.onMonth.bind(this, index)}>{value}</ActionButton>;
+                    })
+                  }
+                </div>
+              </Callout>
+            : null
+        }
       </div>
     );
   }
@@ -138,6 +186,55 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
   private async onNextMonth(): Promise<void> {
     const date = new DateTime(this.state.date).nextMonth().toDate();
+    try {
+      const events = await this.service.getEvents(this.props.listId, date);
+      this.setState({
+        date: date,
+        events: events,
+        error: null
+      });
+    }
+    catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
+  private async onMonth(month: number): Promise<void> {
+    const date = new Date(this.state.date);
+    date.setMonth(month);
+    try {
+      const events = await this.service.getEvents(this.props.listId, date);
+      this.setState({
+        date: date,
+        events: events,
+        error: null
+      });
+    }
+    catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
+  private async onPrevYear(): Promise<void> {
+    const date = new DateTime(this.state.date).prevYear().toDate();
+    try {
+      const events = await this.service.getEvents(this.props.listId, date);
+      this.setState({
+        date: date,
+        events: events,
+        error: null
+      });
+    }
+    catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
+  private async onNextYear(): Promise<void> {
+    const date = new DateTime(this.state.date).nextYear().toDate();
     try {
       const events = await this.service.getEvents(this.props.listId, date);
       this.setState({

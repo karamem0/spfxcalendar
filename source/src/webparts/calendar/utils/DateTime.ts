@@ -128,6 +128,18 @@ export class DateTime {
     return new DateTime(date);
   }
 
+  public nextYear(): DateTime {
+    const date = new Date(this.date);
+    date.setFullYear(date.getFullYear() + 1);
+    return new DateTime(date);
+  }
+
+  public prevYear(): DateTime {
+    const date = new Date(this.date);
+    date.setFullYear(date.getFullYear() - 1);
+    return new DateTime(date);
+  }
+
   public nextMonth(): DateTime {
     const date = new Date(this.date);
     date.setMonth(date.getMonth() + 1);
