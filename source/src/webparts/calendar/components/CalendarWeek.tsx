@@ -1,16 +1,21 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 
-import { ICalendarDateProps, CalendarDate } from './CalendarDate';
-import { Event } from '../models/Event';
+import {
+  ICalendarDateProps,
+  CalendarDate
+} from './CalendarDate';
+import { IPermissionInformation } from './IPermissionInformation';
+import { EventItem } from '../models/EventItem';
 import { DateTime } from '../utils/DateTime';
-
-const dateFormat = require('dateformat') as Function;
 
 export interface ICalendarWeekProps {
   beginDate: Date;
   endDate: Date;
-  events: Array<Event>;
+  permission: IPermissionInformation;
+  items: Array<EventItem>;
+  onItemAdd: (value: EventItem) => void;
+  onItemSelect: (value: EventItem) => void;
 }
 
 export interface ICalendarWeekState { }
@@ -19,26 +24,26 @@ export class CalendarWeek extends React.Component<ICalendarWeekProps, ICalendarW
 
   constructor(props: ICalendarWeekProps) {
     super(props);
+    this.state = {};
   }
 
   public render(): React.ReactElement<ICalendarWeekProps> {
-    const datePropsArray = Array<ICalendarDateProps>();
+    const dateProps = new Array<ICalendarDateProps>();
     for (let date = new Date(this.props.beginDate); date <= this.props.endDate; date.setDate(date.getDate() + 1)) {
-      datePropsArray.push({
+      dateProps.push({
         date: new Date(date),
-        events: this.props.events.filter((event) =>
-          event.beginDate >= date &&
-          event.beginDate < new DateTime(date).nextDay().toDate()
-        )
+        permission: this.props.permission,
+        items: this.props.items.filter((item) =>
+          item.beginDate >= date &&
+          item.beginDate < new DateTime(date).nextDay().toDate()
+        ),
+        onItemAdd: this.props.onItemAdd,
+        onItemSelect: this.props.onItemSelect
       });
     }
     return (
       <tr className={styles.calendarweek}>
-        {
-          datePropsArray.map((props) => {
-            return <CalendarDate key={dateFormat(props.date, 'yyyymmdd')} {...props}></CalendarDate>;
-          })
-        }
+        {dateProps.map((props) => <CalendarDate key={new DateTime(props.date).format('yyyymmdd')} {...props} />)}
       </tr>
     );
   }
