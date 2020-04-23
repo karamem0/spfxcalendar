@@ -1,249 +1,310 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import { IWebPartContext } from "@microsoft/sp-webpart-base";
-import { ActionButton, DefaultButton, Callout, IconButton, MessageBar, MessageBarType, getId } from 'office-ui-fabric-react';
+import * as Office from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { ICalendarHeadProps, CalendarHead } from './CalendarHead';
-import { ICalendarWeekProps, CalendarWeek } from './CalendarWeek';
-import { Event } from '../models/Event';
+import {
+  ICalendarWeekProps,
+  CalendarWeek
+} from './CalendarWeek';
+import { CalendarPanelView } from './CalendarPanelView';
+import { CalendarPanelAdd } from './CalendarPanelAdd';
+import { IPermissionInformation } from './IPermissionInformation';
+import { EventItem } from '../models/EventItem';
+import { PermissionKind } from '../models/Permission';
 import { CalendarService } from '../services/CalendarService';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarProps {
-  context: IWebPartContext;
-  listId: string;
+  service: CalendarService;
 }
 
 export interface ICalendarState {
   date: Date;
-  events: Array<Event>;
-  showCallout: boolean;
+  permission: IPermissionInformation;
+  items: Array<EventItem>;
+  itemView: EventItem;
+  itemAdd: EventItem;
+  isCalloutVisible: boolean;
   error: string;
 }
 
 export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
-  private service: CalendarService;
   private dateButton: HTMLElement;
-  private calloutLabelId: string = getId('callout-label');
-  private calloutDescriptionId: string = getId('callout-description');
+  private calloutLabelId: string = Office.getId('callout-label');
+  private calloutDescriptionId: string = Office.getId('callout-description');
 
   constructor(props: ICalendarProps) {
     super(props);
-    this.service = new CalendarService(this.props.context);
     this.state = {
       date: DateTime.today().toDate(),
-      events: [],
-      showCallout: false,
+      permission: {
+        canAdd: false,
+        canEdit: false,
+        canDelete: false,
+      },
+      items: [],
+      itemView: null,
+      itemAdd: null,
+      isCalloutVisible: false,
       error: null
     };
   }
 
   public render(): React.ReactElement<ICalendarProps> {
-    const headPropsArray: Array<ICalendarHeadProps> = strings.DayNames.map((value) => {
-      return { name: value };
-    });
     const beginDate = new DateTime(this.state.date).beginOfMonth().beginOfWeek().toDate();
     const endDate = new DateTime(this.state.date).endOfMonth().endOfWeek().toDate();
-    const weekPropsArray: Array<ICalendarWeekProps> = [];
+    const weekProps = new Array<ICalendarWeekProps>();
     for (let date = new Date(beginDate); date < endDate; date.setDate(date.getDate() + 7)) {
-      weekPropsArray.push({
+      weekProps.push({
         beginDate: new Date(date),
         endDate: new DateTime(date).endOfWeek().toDate(),
-        events: this.state.events.filter((event) =>
+        permission: this.state.permission,
+        items: this.state.items.filter((event) =>
           event.beginDate >= date &&
           event.beginDate < new DateTime(date).endOfWeek().nextDay().toDate()
-        )
+        ),
+        onItemAdd: (item: EventItem) => this.setState({ itemAdd: item }),
+        onItemSelect: (item) => this.setState({ itemView: item })
       });
     }
     return (
       <div className={styles.calendar}>
         {
           this.state.error
-            ? <MessageBar messageBarType={MessageBarType.error} onDismiss={() => this.setState({ error: null })}>{this.state.error}</MessageBar>
+            ? <Office.MessageBar
+                messageBarType={Office.MessageBarType.error}
+                onDismiss={() => this.setState({ error: null })}>
+                  {this.state.error}
+              </Office.MessageBar>
             : null
         }
         <table>
           <thead>
             <tr>
               <td colSpan={7} className={styles.head}>
-                <IconButton
+                <Office.IconButton
                   className={styles.icon}
                   iconProps={{ iconName: 'ChevronLeft' }}
-                  onClick={this.onPrevMonth.bind(this)}>
-                </IconButton>
+                  onClick={this.onPrevMonth.bind(this)} />
                 <span ref={(element) => this.dateButton = element}>
-                  <ActionButton
+                  <Office.ActionButton
                     className={styles.date}
-                    onClick={() => this.setState({ showCallout: true })}>
-                    {new DateTime(this.state.date).format(strings.CalendarFormat)}
-                  </ActionButton>
+                    onClick={() => this.setState({ isCalloutVisible: true })}>
+                    {new DateTime(this.state.date).format(strings.YearMonthFormat)}
+                  </Office.ActionButton>
                 </span>
-                <IconButton
+                <Office.IconButton
                   className={styles.icon}
                   iconProps={{ iconName: 'ChevronRight' }}
-                  onClick={this.onNextMonth.bind(this)} >
-                </IconButton>
+                  onClick={this.onNextMonth.bind(this)} />
               </td>
             </tr>
           </thead>
           <tbody>
             <tr className={styles.head}>
               {
-                headPropsArray.map((props) => {
-                  return <CalendarHead {...props}></CalendarHead>;
-                })
+                strings.DayNames.map((name) => 
+                  <td className={styles.calendarhead}>
+                    {name}
+                  </td>
+                )
               }
             </tr>
             {
-              weekPropsArray.map((props) => {
-                return <CalendarWeek key={new DateTime(props.beginDate).format('yyyymmdd')} {...props}></CalendarWeek>;
-              })
+              weekProps.map((props) =>
+                <CalendarWeek key={new DateTime(props.beginDate).format('yyyymmdd')} {...props} />
+              )
             }
           </tbody>
         </table>
         {
-          this.state.showCallout
-            ? <Callout
+          this.state.isCalloutVisible
+            ? <Office.Callout
                 className={styles.callout}
                 target={this.dateButton}
                 ariaLabelledBy={this.calloutLabelId}
                 ariaDescribedBy={this.calloutDescriptionId}
-                onDismiss={() => this.setState({ showCallout: false })}>
+                onDismiss={() => this.setState({ isCalloutVisible: false })}>
                 <div id={this.calloutLabelId} className={styles.label}>
-                  <IconButton
+                  <Office.IconButton
                     iconProps={{ iconName: 'ChevronLeft' }}
-                    onClick={this.onPrevYear.bind(this)}>
-                  </IconButton>
-                  <span>{this.state.date.getFullYear()}</span>
-                  <IconButton
+                    onClick={this.onPrevYear.bind(this)} />
+                  {this.state.date.getFullYear()}
+                  <Office.IconButton
                     iconProps={{ iconName: 'ChevronRight' }}
-                    onClick={this.onNextYear.bind(this)}>
-                  </IconButton>
+                    onClick={this.onNextYear.bind(this)} />
                 </div>
                 <div id={this.calloutDescriptionId} className={styles.description}>
                   {
-                    strings.MonthNames.map((value, index) => {
-                      return <ActionButton className={styles.button} onClick={this.onMonth.bind(this, index)}>{value}</ActionButton>;
-                    })
+                    strings.MonthNames.map((value, index) => 
+                      <Office.ActionButton
+                        className={styles.button}
+                        onClick={this.onSetMonth.bind(this, index)}>
+                        {value}
+                      </Office.ActionButton>
+                    )
                   }
                 </div>
-              </Callout>
+              </Office.Callout>
             : null
         }
+        <CalendarPanelView
+          item={this.state.itemView}
+          onDelete={(value) => this.onItemDelete(value)}
+          onCancel={() => this.setState({ itemView: null })} />
+        <CalendarPanelAdd
+          item={this.state.itemAdd}
+          onSave={(value) => this.onItemAdd(value)}
+          onCancel={() => this.setState({ itemAdd: null })} />
       </div>
     );
   }
 
   public async componentDidMount(): Promise<void> {
     try {
-      const events = await this.service.getEvents(this.props.listId, this.state.date);
+      const items = await this.props.service.getItems(this.state.date);
+      const perm = await this.props.service.getBasePermission();
       this.setState({
-        events: events,
+        items: items,
+        permission: {
+          canAdd: perm.has(PermissionKind.AddListItems),
+          canEdit: perm.has(PermissionKind.EditListItems),
+          canDelete: perm.has(PermissionKind.DeleteListItems)
+        },
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
   public async componentDidUpdate(prevProps: ICalendarProps, prevState: ICalendarState): Promise<void> {
-    if (this.props.listId == prevProps.listId) {
+    if (this.props.service.listId == prevProps.service.listId) {
       return;
     }
     try {
-      const events = await this.service.getEvents(this.props.listId, this.state.date);
+      const items = await this.props.service.getItems(this.state.date);
+      const perm = await this.props.service.getBasePermission();
       this.setState({
-        events: events,
+        items: items,
+        permission: {
+          canAdd: perm.has(PermissionKind.AddListItems),
+          canEdit: perm.has(PermissionKind.EditListItems),
+          canDelete: perm.has(PermissionKind.DeleteListItems)
+        },
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
   private async onPrevMonth(): Promise<void> {
-    const date = new DateTime(this.state.date).prevMonth().toDate();
     try {
-      const events = await this.service.getEvents(this.props.listId, date);
+      const date = new DateTime(this.state.date).prevMonth().toDate();
+      const items = await this.props.service.getItems(date);
       this.setState({
         date: date,
-        events: events,
+        items: items,
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
   private async onNextMonth(): Promise<void> {
-    const date = new DateTime(this.state.date).nextMonth().toDate();
     try {
-      const events = await this.service.getEvents(this.props.listId, date);
+      const date = new DateTime(this.state.date).nextMonth().toDate();
+      const items = await this.props.service.getItems(date);
       this.setState({
         date: date,
-        events: events,
+        items: items,
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
-  private async onMonth(month: number): Promise<void> {
-    const date = new Date(this.state.date);
-    date.setMonth(month);
+  private async onSetMonth(month: number): Promise<void> {
     try {
-      const events = await this.service.getEvents(this.props.listId, date);
+      const date = new Date(this.state.date);
+      date.setMonth(month);
+      const items = await this.props.service.getItems(date);
       this.setState({
         date: date,
-        events: events,
+        items: items,
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
   private async onPrevYear(): Promise<void> {
-    const date = new DateTime(this.state.date).prevYear().toDate();
     try {
-      const events = await this.service.getEvents(this.props.listId, date);
+      const date = new DateTime(this.state.date).prevYear().toDate();
+      const items = await this.props.service.getItems(date);
       this.setState({
         date: date,
-        events: events,
+        items: items,
         error: null
       });
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }
   }
 
   private async onNextYear(): Promise<void> {
-    const date = new DateTime(this.state.date).nextYear().toDate();
     try {
-      const events = await this.service.getEvents(this.props.listId, date);
+      const date = new DateTime(this.state.date).nextYear().toDate();
+      const items = await this.props.service.getItems(date);
       this.setState({
         date: date,
-        events: events,
+        items: items,
         error: null
       });
+    } catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
     }
-    catch (error) {
+  }
+
+  public async onItemAdd(item: EventItem): Promise<void> {
+    try {
+      await this.props.service.createItem(item);
+      const items = await this.props.service.getItems(this.state.date);
+      this.setState({
+        items: items,
+        itemAdd: null,
+        error: null
+      });
+    } catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
+  public async onItemDelete(item: EventItem): Promise<void> {
+    try {
+      await this.props.service.deleteItem(item);
+      const items = await this.props.service.getItems(this.state.date);
+      this.setState({
+        items: items,
+        itemView: null,
+        error: null
+      });
+    } catch (error) {
       console.error(error);
       this.setState({ error: error.message });
     }

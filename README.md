@@ -7,4 +7,11 @@ SPFxCalendar is a SharePoint webpart that displays event list items in the calen
 
 ## Screenshot
 
-![screenshot](./img/screenshot.png)
+### Default
+![screenshot1](./img/screenshot1.png)
+
+### View an item
+![screenshot2](./img/screenshot2.png)
+
+### Add an item
+![screenshot3](./img/screenshot3.png)

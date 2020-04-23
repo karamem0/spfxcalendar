@@ -24,7 +24,7 @@
 }
 .calendarhead {
   border: solid 1px rgb(229, 229, 229);
-  height: 30px;
+  height: 2em;
   width: 14.28571%;
   text-align: center;
 }
@@ -36,17 +36,39 @@
   width: 14.28571%;
   text-align: left;
   vertical-align: top;
-  .day {
-    margin: 3px 3px 0 3px;
+  .head {
+    overflow: hidden;
+    .day {
+      float: left;
+      width: 50%;
+      .dayinner {
+        margin: .25em 0 0 .25em;
+      }
+    }
+    .add {
+      float: right;
+      width: 50%;
+      .addinner {
+        margin: 0 .25em 0 0;
+        text-align: right;
+        i {
+          font-size: xx-small;
+          padding-right: .25em;
+        }
+        span {
+          font-size: x-small;
+        }
+      }
+    }
   }
-  .scroll {
+  .body {
     height: 60px;
     overflow-y: auto;
-    margin: 0 3px 3px 3px;
+    margin: 0 .25em .25em .25em;
   }
 }
-.calendarevent {
-  .event {
+.calendaritem {
+  .item {
     font-size: small;
     white-space: nowrap;
     overflow: hidden;
@@ -74,18 +96,43 @@
     }
   }
 }
-.bubble {
-  .icon {
-    font-size: x-small;
-    margin-left: 0.5em;
-  }
-  .location {
+.panel {
+  i {
     font-size: small;
   }
-  .alldays {
-    font-size: small;
+  .formlabel {
+    display: table-cell;
+    padding: 0 .5em 0 0;
   }
-  .date {
-    font-size: small;
+  .formcontrol {
+    display: table-cell;
+    width: 100%;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    li:not(:first-child) {
+      margin: .5em 0 0 0;
+    }
+  }
+  .button {
+    margin: 0 .5em 0 0;
+  }
+  .time {
+    display: inline-block;
+    width: calc(50% - .5em);
+    vertical-align: top;
+  }
+  .timeseparator {
+    display: inline-block;
+    text-align: center;
+    line-height: 32px;
+    height: 32px;
+    width: 1em;
+    vertical-align: top;
+  }
+  .rangeseparator {
+    text-align: center;
   }
 }
