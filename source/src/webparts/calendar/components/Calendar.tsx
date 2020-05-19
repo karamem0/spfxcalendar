@@ -139,7 +139,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
                 </div>
                 <div id={this.calloutDescriptionId} className={styles.description}>
                   {
-                    strings.MonthNames.map((value, index) => 
+                    strings.MonthShortNames.map((value, index) => 
                       <Office.ActionButton
                         className={styles.button}
                         onClick={this.onSetMonth.bind(this, index)}>
