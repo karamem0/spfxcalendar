@@ -1,10 +1,5 @@
 import { DateTime } from '../utils/DateTime';
 
-interface IEventItemRecurrenceOptions {
-  date: Date;
-  text: string;
-}
-
 export class EventItem {
 
   public id?: number;
@@ -13,34 +8,32 @@ export class EventItem {
   public beginDate?: Date;
   public endDate?: Date;
   public allDayEvent?: boolean;
-  public recurrence?: string;
+  public recurrenceText?: string;
 
-  constructor(value?: any, options?: IEventItemRecurrenceOptions) {
-    if (value == null) {
+  constructor(data?: any) {
+    if (data == null) {
       return;
     }
-    let beginDate = new Date(Date.parse(value.EventDate));
-    let endDate = new Date(Date.parse(value.EndDate));
-    if (value.fAllDayEvent) {
-      beginDate = new DateTime(beginDate).universal().toDate();
-      endDate = new DateTime(endDate).universal().toDate();
-    }
-    if (options == null) {
-      this.id = value.Id;
-      this.title = value.Title;
-      this.location = value.Location;
-      this.beginDate = beginDate;
-      this.endDate = endDate;
-      this.allDayEvent = value.fAllDayEvent;
-      this.recurrence = null;
+    if (Object.prototype.toString.call(data).slice(8, -1) == 'EventItem') {
+      this.id = data.id;
+      this.title = data.title;
+      this.location = data.location;
+      this.beginDate = data.beginDate;
+      this.endDate = data.endDate;
+      this.allDayEvent = data.allDayEvent;
+      this.recurrenceText = data.recurrenceText;
     } else {
-      this.id = value.Id;
-      this.title = value.Title;
-      this.location = value.Location;
-      this.beginDate = new DateTime(options.date).setTime(beginDate).toDate();
-      this.endDate = new DateTime(options.date).setTime(endDate).toDate();
-      this.allDayEvent = value.fAllDayEvent;
-      this.recurrence = options.text;
+      this.id = data.Id;
+      this.title = data.Title;
+      this.location = data.Location;
+      this.beginDate = data.fAllDayEvent
+        ? new DateTime(data.EventDate).universal().toDate()
+        : new Date(Date.parse(data.EventDate));
+      this.endDate = data.fAllDayEvent
+        ? new DateTime(data.EndDate).universal().toDate()
+        : new Date(Date.parse(data.EndDate));
+      this.allDayEvent = data.fAllDayEvent;
+      this.recurrenceText = null;
     }
   }
 

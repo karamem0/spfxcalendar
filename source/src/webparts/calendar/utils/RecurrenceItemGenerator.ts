@@ -297,106 +297,118 @@ class RecurrenceData {
 
 export class RecurrenceItemGenerator {
 
-  public static generate(item: any, date: Date): Array<EventItem> {
-    const recurrenceData = RecurrenceData.parse(item.RecurrenceData);
-    const eventDate = new Date(Date.parse(item.EventDate));
+  public static generate(data: any, date: Date): Array<EventItem> {
+    const item = new EventItem(data);
+    const result = new Array<EventItem>();
+    const recurrenceData = RecurrenceData.parse(data.RecurrenceData);
     const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().toDate();
     const calendarEndDate = new DateTime(date).endOfMonth().endOfWeek().nextDay().toDate();
-    const repeatItems: Array<EventItem> = [];
     if (recurrenceData.rule.repeat.yearly != undefined) {
-      const repeatBeginDate = recurrenceData.rule.repeat.yearly.toDate(eventDate.getFullYear());
+      const repeatBeginDate = recurrenceData.rule.repeat.yearly.toDate(item.beginDate.getFullYear());
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumYears(repeatBeginDate, repeatEndDate, (yearIndex, yearDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
         if (yearIndex % recurrenceData.rule.repeat.yearly.frequency == 0) {
-          repeatItems.push(new EventItem(
-            item,
-            {
-              date: yearDate,
-              text: strings.RecurrenceYearlyLabel
-            }));
+          result.push({
+            id: item.id,
+            title: item.title,
+            location: item.location,
+            beginDate: new DateTime(yearDate).setTime(item.beginDate).toDate(),
+            endDate: new DateTime(yearDate).setTime(item.endDate).toDate(),
+            allDayEvent: item.allDayEvent,
+            recurrenceText: strings.RecurrenceYearlyLabel
+          });
         }
         return true;
       });
     }
     if (recurrenceData.rule.repeat.yearlyByDay != undefined) {
-      const repeatBeginDate = recurrenceData.rule.repeat.yearlyByDay.toDate(eventDate.getFullYear(), recurrenceData.rule.repeat.yearlyByDay.month);
+      const repeatBeginDate = recurrenceData.rule.repeat.yearlyByDay.toDate(item.beginDate.getFullYear(), recurrenceData.rule.repeat.yearlyByDay.month);
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumYears(repeatBeginDate, repeatEndDate, (yearIndex, yearDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
-        repeatItems.push(new EventItem(
-          item,
-          {
-            date: yearDate,
-            text: strings.RecurrenceYearlyLabel
-          }));
+        result.push({
+          id: item.id,
+          title: item.title,
+          location: item.location,
+          beginDate: new DateTime(yearDate).setTime(item.beginDate).toDate(),
+          endDate: new DateTime(yearDate).setTime(item.endDate).toDate(),
+          allDayEvent: item.allDayEvent,
+          recurrenceText: strings.RecurrenceYearlyLabel
+        });
         return true;
       });
     }
     if (recurrenceData.rule.repeat.monthly != undefined) {
-      const repeatBeginDate = recurrenceData.rule.repeat.monthly.toDate(eventDate.getFullYear(), eventDate.getMonth());
+      const repeatBeginDate = recurrenceData.rule.repeat.monthly.toDate(item.beginDate.getFullYear(), item.beginDate.getMonth());
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumMonths(repeatBeginDate, repeatEndDate, (monthIndex, monthDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
         if (monthIndex % recurrenceData.rule.repeat.monthly.frequency == 0) {
-          repeatItems.push(new EventItem(
-            item,
-            {
-              date: monthDate,
-              text: strings.RecurrenceMonthlyLabel
-            }));
+          result.push({
+            id: item.id,
+            title: item.title,
+            location: item.location,
+            beginDate: new DateTime(monthDate).setTime(item.beginDate).toDate(),
+            endDate: new DateTime(monthDate).setTime(item.endDate).toDate(),
+            allDayEvent: item.allDayEvent,
+            recurrenceText: strings.RecurrenceMonthlyLabel
+          });
         }
         return true;
       });
     }
     if (recurrenceData.rule.repeat.monthlyByDay != undefined) {
-      const repeatBeginDate = recurrenceData.rule.repeat.monthlyByDay.toDate(eventDate.getFullYear(), eventDate.getMonth());
+      const repeatBeginDate = recurrenceData.rule.repeat.monthlyByDay.toDate(item.beginDate.getFullYear(), item.beginDate.getMonth());
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumMonths(repeatBeginDate, repeatEndDate, (monthIndex, monthDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
         if (monthIndex % recurrenceData.rule.repeat.monthlyByDay.frequency == 0) {
-          repeatItems.push(new EventItem(
-            item,
-            {
-              date: monthDate,
-              text: strings.RecurrenceMonthlyLabel
-            }));
+          result.push({
+            id: item.id,
+            title: item.title,
+            location: item.location,
+            beginDate: new DateTime(monthDate).setTime(item.beginDate).toDate(),
+            endDate: new DateTime(monthDate).setTime(item.endDate).toDate(),
+            allDayEvent: item.allDayEvent,
+            recurrenceText: strings.RecurrenceMonthlyLabel
+          });
         }
         return true;
       });
     }
     if (recurrenceData.rule.repeat.weekly != undefined) {
-      const repeatBeginDate = eventDate;
+      const repeatBeginDate = item.beginDate;
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumWeeks(repeatBeginDate, repeatEndDate, (weekIndex, weekDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
@@ -405,17 +417,20 @@ export class RecurrenceItemGenerator {
           const weekEndDate = new DateTime(weekDate).endOfWeek().toDate();
           DateTime.enumDates(weekBeginDate, weekEndDate, (dateIndex, dateDate) => {
             if (recurrenceData.rule.repeatInstances != undefined) {
-              if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+              if (result.length >= recurrenceData.rule.repeatInstances) {
                 return false;
               }
             }
             if (recurrenceData.rule.repeat.weekly.days[dateDate.getDay()]) {
-              repeatItems.push(new EventItem(
-                item,
-                {
-                  date: dateDate,
-                  text: strings.RecurrenceWeeklyLabel
-                }));
+              result.push({
+                id: item.id,
+                title: item.title,
+                location: item.location,
+                beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
+                endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
+                allDayEvent: item.allDayEvent,
+                recurrenceText: strings.RecurrenceWeeklyLabel
+              });
             }
             return true;
           });
@@ -424,41 +439,47 @@ export class RecurrenceItemGenerator {
       });
     }
     if (recurrenceData.rule.repeat.daily != undefined) {
-      const repeatBeginDate = eventDate;
+      const repeatBeginDate = item.beginDate;
       const repeatEndDate = recurrenceData.rule.windowEnd < calendarEndDate
         ? recurrenceData.rule.windowEnd
         : calendarEndDate;
       DateTime.enumDates(repeatBeginDate, repeatEndDate, (dateIndex, dateDate) => {
         if (recurrenceData.rule.repeatInstances != undefined) {
-          if (repeatItems.length >= recurrenceData.rule.repeatInstances) {
+          if (result.length >= recurrenceData.rule.repeatInstances) {
             return false;
           }
         }
         if (recurrenceData.rule.repeat.daily.weekday) {
           if (new DateTime(dateDate).isWeekday()) {
-            repeatItems.push(new EventItem(
-              item,
-              {
-                date: dateDate,
-                text: strings.RecurrenceDailyLabel
-              }));
+            result.push({
+              id: item.id,
+              title: item.title,
+              location: item.location,
+              beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
+              endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
+              allDayEvent: item.allDayEvent,
+              recurrenceText: strings.RecurrenceDailyLabel
+            });
           }
         } else {
           if (dateIndex % recurrenceData.rule.repeat.daily.frequency == 0) {
-            repeatItems.push(new EventItem(
-              item,
-              {
-                date: dateDate,
-                text: strings.RecurrenceDailyLabel
-              }));
+            result.push({
+              id: item.id,
+              title: item.title,
+              location: item.location,
+              beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
+              endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
+              allDayEvent: item.allDayEvent,
+              recurrenceText: strings.RecurrenceDailyLabel
+            });
           }
         }
         return true;
       });
     }
-    return repeatItems.filter((repeatItem: EventItem) =>
-      repeatItem.beginDate >= calendarBeginDate &&
-      repeatItem.beginDate <= calendarEndDate);
+    return result.filter((value) =>
+      value.beginDate >= calendarBeginDate &&
+      value.beginDate <= calendarEndDate);
   }
 
 }

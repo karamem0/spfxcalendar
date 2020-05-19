@@ -52,13 +52,13 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
             </div>
           }>
           {
-            this.props.item.recurrence
+            this.props.item.recurrenceText
               ? <p>
                 <div className={styles.formlabel}>
                   <Office.Icon iconName="Sync" title={strings.RecurrenceLabel} />
                 </div>
                 <div className={styles.formcontrol}>
-                  {this.props.item.recurrence}
+                  {this.props.item.recurrenceText}
                 </div>
               </p>
               : null

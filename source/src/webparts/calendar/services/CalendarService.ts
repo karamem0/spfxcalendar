@@ -6,7 +6,8 @@ import * as strings from 'CalendarWebPartStrings';
 import { Permission } from '../models/Permission';
 import { EventItem } from '../models/EventItem';
 import { DateTime } from '../utils/DateTime';
-import { RecurrenceItemGenerator } from '../utils/Recurrence';
+import { RecurrenceItemGenerator } from '../utils/RecurrenceItemGenerator';
+import { MultipleItemGererator } from '../utils/MultipleItemGenerator';
 
 export class CalendarService {
 
@@ -52,7 +53,10 @@ export class CalendarService {
         if (data.error) {
           throw data.error;
         }
-        data.value.forEach((value: any) => items.push(new EventItem(value)));
+        data.value.forEach((value: any) =>
+          MultipleItemGererator
+            .generate(value)
+            .forEach((item) => items.push(item)));
         return items;
       })
       .then(async (items: Array<EventItem>) => {
@@ -69,11 +73,10 @@ export class CalendarService {
         if (data.error) {
           throw data.error;
         }
-        data.value.forEach((value: any) => {
+        data.value.forEach((value: any) =>
           RecurrenceItemGenerator
             .generate(value, date)
-            .forEach((item: EventItem) => items.push(item));
-        });
+            .forEach((item) => items.push(item)));
         return items;
       });
   }

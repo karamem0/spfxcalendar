@@ -97,10 +97,23 @@ export class DateTime {
     }
   }
 
+  public static diffDates(beginDate: Date, endDate: Date): number {
+    return Math.floor((endDate.getTime() - beginDate.getTime()) / 86400000);
+  }
+
   private date: Date;
 
-  constructor(date: Date) {
-    this.date = new Date(date);
+  constructor(value: string | Date) {
+    switch (Object.prototype.toString.call(value).slice(8, -1)) {
+      case 'String':
+        this.date = new Date(Date.parse(value.toString()));
+        break;
+      case 'Date':
+        this.date = new Date(value);
+        break;
+      default:
+        throw new Error();
+    }
   }
 
   public beginOfMonth(): DateTime {
@@ -125,6 +138,18 @@ export class DateTime {
   public endOfWeek(): DateTime {
     const date = new Date(this.date);
     date.setDate(date.getDate() + 6 - date.getDay());
+    return new DateTime(date);
+  }
+
+  public beginOfDate(): DateTime {
+    const date = new Date(this.date);
+    date.setHours(0, 0, 0, 0);
+    return new DateTime(date);
+  }
+
+  public endOfDate(): DateTime {
+    const date = new Date(this.date);
+    date.setHours(23, 59, 59, 999);
     return new DateTime(date);
   }
 
