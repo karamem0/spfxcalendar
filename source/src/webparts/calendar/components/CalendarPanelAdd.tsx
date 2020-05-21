@@ -87,7 +87,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
               <Office.Icon iconName="Header" title={strings.TitleLabel} />
             </div>
             <div className={styles.formcontrol}>
-              <Office.TextField onChanged={(value) => this.setState({ title: value })} />
+              <Office.TextField onChange={(event, value) => this.setState({ title: value })} />
             </div>
           </p>
           <p>
@@ -95,7 +95,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
               <Office.Icon iconName="MapPin" title={strings.LocationLabel} />
             </div>
             <div className={styles.formcontrol}>
-              <Office.TextField onChanged={(value) => this.setState({ location: value })} />
+              <Office.TextField onChange={(event, value) => this.setState({ location: value })} />
             </div>
           </p>
           <p>
@@ -120,7 +120,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                           <Office.Dropdown
                             options={this.hourOptions}
                             selectedKey={new DateTime(this.state.beginDate).format("HH")}
-                            onChanged={(value) => {
+                            onChange={(event, value) => {
                               const date = this.state.beginDate;
                               date.setHours(Number.parseInt(value.key.toString()));
                               this.setState({ beginDate: date });
@@ -131,7 +131,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                           <Office.Dropdown
                             options={this.minuteOptions}
                             selectedKey={new DateTime(this.state.beginDate).format("MM")}
-                            onChanged={(value) => {
+                            onChange={(event, value) => {
                               const date = this.state.beginDate;
                               date.setMinutes(Number.parseInt(value.key.toString()));
                               this.setState({ beginDate: date });
@@ -156,7 +156,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                         <Office.Dropdown
                           options={this.hourOptions}
                           selectedKey={new DateTime(this.state.endDate).format("HH")}
-                          onChanged={(value) => {
+                          onChange={(event, value) => {
                             const date = this.state.endDate;
                             date.setHours(Number.parseInt(value.key.toString()));
                             this.setState({ endDate: date });
@@ -167,7 +167,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                         <Office.Dropdown
                           options={this.minuteOptions}
                           selectedKey={new DateTime(this.state.endDate).format("MM")}
-                          onChanged={(value) => {
+                          onChange={(event, value) => {
                             const date = this.state.endDate;
                             date.setMinutes(Number.parseInt(value.key.toString()));
                             this.setState({ endDate: date });
@@ -180,7 +180,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                     checked={this.state.allDayEvent}
                     inlineLabel={true}
                     label={strings.AllDayEventLabel}
-                    onChanged={(value) => this.setState({ allDayEvent: value })} />
+                    onChange={(event, value) => this.setState({ allDayEvent: value })} />
                 </li>
               </ul>
             </div>
