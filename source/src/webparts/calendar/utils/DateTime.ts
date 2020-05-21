@@ -111,6 +111,8 @@ export class DateTime {
       case 'Date':
         this.date = new Date(value);
         break;
+      case 'Null':
+        break;
       default:
         throw new Error();
     }

@@ -23,7 +23,7 @@ stages:
         checkLatest: true
     - task: Npm@1
       inputs:
-        command: 'install'
+        command: 'ci'
         workingDir: 'source'
     - task: Gulp@1
       inputs:
@@ -56,6 +56,7 @@ stages:
   - job: Release
     displayName: Release job
     steps:
+    - checkout: none
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
