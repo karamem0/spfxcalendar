@@ -81,6 +81,21 @@ export class CalendarService {
       });
   }
 
+  public async getItem(id: number): Promise<EventItem> {
+    if (this.listId == null) {
+      throw new Error(strings.NoListSelectedError);
+    }
+    const response = await this.context.spHttpClient.get(
+      this.context.pageContext.web.serverRelativeUrl +
+      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})`,
+      SPHttpClient.configurations.v1);
+    const data = await response.json();
+    if (data.error) {
+      throw data.error;
+    }
+    return new EventItem(data);
+  }
+
   public async createItem(item: EventItem): Promise<void> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
@@ -90,6 +105,35 @@ export class CalendarService {
       `/_api/web/lists/getbyid(guid'${this.listId}')/items`,
       SPHttpClient.configurations.v1,
       {
+        body: JSON.stringify({
+          Title: item.title,
+          Location: item.location,
+          EventDate: item.beginDate,
+          EndDate: item.endDate,
+          fAllDayEvent: item.allDayEvent
+        })
+      });
+    if (!response.ok) {
+      const data = await response.json();
+      if (data.error) {
+        throw data.error;
+      }
+    }
+  }
+
+  public async updateItem(item: EventItem): Promise<void> {
+    if (this.listId == null) {
+      throw new Error(strings.NoListSelectedError);
+    }
+    const response = await this.context.spHttpClient.post(
+      this.context.pageContext.web.serverRelativeUrl +
+      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${item.id})`,
+      SPHttpClient.configurations.v1,
+      {
+        headers: {
+          "X-HTTP-Method": "MERGE",
+          "If-Match": "*"
+        },
         body: JSON.stringify({
           Title: item.title,
           Location: item.location,

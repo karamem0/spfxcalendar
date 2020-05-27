@@ -40,8 +40,8 @@ export enum PermissionKind {
 
 export class Permission {
 
-  public high?: number;
-  public low?: number;
+  public high: number;
+  public low: number;
 
   constructor(value?: any) {
     if (value == null) {

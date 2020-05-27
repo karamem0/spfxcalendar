@@ -10,6 +10,7 @@ import {
 } from './CalendarWeek';
 import { CalendarPanelView } from './CalendarPanelView';
 import { CalendarPanelAdd } from './CalendarPanelAdd';
+import { CalendarPanelEdit } from './CalendarPanelEdit';
 import { IPermissionInformation } from './IPermissionInformation';
 import { EventItem } from '../models/EventItem';
 import { PermissionKind } from '../models/Permission';
@@ -26,6 +27,7 @@ export interface ICalendarState {
   items: Array<EventItem>;
   itemView: EventItem;
   itemAdd: EventItem;
+  itemEdit: EventItem;
   isCalloutVisible: boolean;
   error: string;
 }
@@ -48,6 +50,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
       items: [],
       itemView: null,
       itemAdd: null,
+      itemEdit: null,
       isCalloutVisible: false,
       error: null
     };
@@ -66,8 +69,8 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
           event.beginDate >= date &&
           event.beginDate < new DateTime(date).endOfWeek().nextDay().toDate()
         ),
-        onItemAdd: (item: EventItem) => this.setState({ itemAdd: item }),
-        onItemSelect: (item) => this.setState({ itemView: item })
+        onItemAdd: (item) => this.setState({ itemAdd: item }),
+        onItemSelect: (item) => this.onItemView(item)
       });
     }
     return (
@@ -153,12 +156,18 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
         }
         <CalendarPanelView
           item={this.state.itemView}
+          permission={this.state.permission}
+          onEdit={(value) => this.setState({ itemView: null, itemEdit: value })}
           onDelete={(value) => this.onItemDelete(value)}
-          onCancel={() => this.setState({ itemView: null })} />
+          onCancel={() => this.onCancel()} />
         <CalendarPanelAdd
           item={this.state.itemAdd}
           onSave={(value) => this.onItemAdd(value)}
-          onCancel={() => this.setState({ itemAdd: null })} />
+          onCancel={() => this.onCancel()} />
+        <CalendarPanelEdit
+          item={this.state.itemEdit}
+          onSave={(value) => this.onItemEdit(value)}
+          onCancel={() => this.onCancel()} />
       </div>
     );
   }
@@ -280,6 +289,27 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
+  public onCancel(): void {
+    this.setState({
+      itemView: null,
+      itemAdd: null,
+      itemEdit: null
+    });
+  }
+
+  public async onItemView(item: EventItem): Promise<void> {
+    try {
+      if (item.recurrence) {
+        this.setState({ itemView: item });
+      } else {
+        this.setState({ itemView: await this.props.service.getItem(item.id) });
+      }
+    } catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
   public async onItemAdd(item: EventItem): Promise<void> {
     try {
       await this.props.service.createItem(item);
@@ -287,6 +317,21 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
       this.setState({
         items: items,
         itemAdd: null,
+        error: null
+      });
+    } catch (error) {
+      console.error(error);
+      this.setState({ error: error.message });
+    }
+  }
+
+  public async onItemEdit(item: EventItem): Promise<void> {
+    try {
+      await this.props.service.updateItem(item);
+      const items = await this.props.service.getItems(this.state.date);
+      this.setState({
+        items: items,
+        itemEdit: null,
         error: null
       });
     } catch (error) {
