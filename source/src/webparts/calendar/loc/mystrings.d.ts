@@ -10,6 +10,7 @@ declare interface ICalendarWebPartStrings {
   DayNames: string[];
   DayShortNames: string[];
   DeleteButton: string;
+  EditButton: string;
   EditItemLabel: string;
   GoToTodayLabel: string;
   HourNames: string[];

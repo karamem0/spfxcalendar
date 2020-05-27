@@ -322,7 +322,7 @@ export class RecurrenceItemGenerator {
             beginDate: new DateTime(yearDate).setTime(item.beginDate).toDate(),
             endDate: new DateTime(yearDate).setTime(item.endDate).toDate(),
             allDayEvent: item.allDayEvent,
-            recurrenceText: strings.RecurrenceYearlyLabel
+            recurrence: strings.RecurrenceYearlyLabel
           });
         }
         return true;
@@ -346,7 +346,7 @@ export class RecurrenceItemGenerator {
           beginDate: new DateTime(yearDate).setTime(item.beginDate).toDate(),
           endDate: new DateTime(yearDate).setTime(item.endDate).toDate(),
           allDayEvent: item.allDayEvent,
-          recurrenceText: strings.RecurrenceYearlyLabel
+          recurrence: strings.RecurrenceYearlyLabel
         });
         return true;
       });
@@ -370,7 +370,7 @@ export class RecurrenceItemGenerator {
             beginDate: new DateTime(monthDate).setTime(item.beginDate).toDate(),
             endDate: new DateTime(monthDate).setTime(item.endDate).toDate(),
             allDayEvent: item.allDayEvent,
-            recurrenceText: strings.RecurrenceMonthlyLabel
+            recurrence: strings.RecurrenceMonthlyLabel
           });
         }
         return true;
@@ -395,7 +395,7 @@ export class RecurrenceItemGenerator {
             beginDate: new DateTime(monthDate).setTime(item.beginDate).toDate(),
             endDate: new DateTime(monthDate).setTime(item.endDate).toDate(),
             allDayEvent: item.allDayEvent,
-            recurrenceText: strings.RecurrenceMonthlyLabel
+            recurrence: strings.RecurrenceMonthlyLabel
           });
         }
         return true;
@@ -429,7 +429,7 @@ export class RecurrenceItemGenerator {
                 beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
                 endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
                 allDayEvent: item.allDayEvent,
-                recurrenceText: strings.RecurrenceWeeklyLabel
+                recurrence: strings.RecurrenceWeeklyLabel
               });
             }
             return true;
@@ -458,7 +458,7 @@ export class RecurrenceItemGenerator {
               beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
               endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
               allDayEvent: item.allDayEvent,
-              recurrenceText: strings.RecurrenceDailyLabel
+              recurrence: strings.RecurrenceDailyLabel
             });
           }
         } else {
@@ -470,7 +470,7 @@ export class RecurrenceItemGenerator {
               beginDate: new DateTime(dateDate).setTime(item.beginDate).toDate(),
               endDate: new DateTime(dateDate).setTime(item.endDate).toDate(),
               allDayEvent: item.allDayEvent,
-              recurrenceText: strings.RecurrenceDailyLabel
+              recurrence: strings.RecurrenceDailyLabel
             });
           }
         }

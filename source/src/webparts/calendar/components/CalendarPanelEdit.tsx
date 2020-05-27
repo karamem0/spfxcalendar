@@ -7,13 +7,13 @@ import * as strings from 'CalendarWebPartStrings';
 import { EventItem } from '../models/EventItem';
 import { DateTime } from '../utils/DateTime';
 
-export interface ICalendarPanelAddProps {
+export interface ICalendarPanelEditProps {
   item: EventItem;
   onSave: (value: EventItem) => void;
   onCancel: () => void;
 }
 
-export interface ICalendarPanelAddState {
+export interface ICalendarPanelEditState {
   title: string;
   location: string;
   beginDate: Date;
@@ -21,7 +21,7 @@ export interface ICalendarPanelAddState {
   allDayEvent: boolean;
 }
 
-export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, ICalendarPanelAddState> {
+export class CalendarPanelEdit extends React.Component<ICalendarPanelEditProps, ICalendarPanelEditState> {
 
   private readonly calendarFormatter: Office.ICalendarFormatDateCallbacks = {
     formatDay: (value: Date) => new DateTime(value).format(strings.DayFormat),
@@ -39,7 +39,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
   private readonly hourOptions: Array<Office.IDropdownOption> = strings.HourNames.map((value) => ({ key: value, text: value }));
   private readonly minuteOptions: Array<Office.IDropdownOption> = strings.MinuteNames.map((value) => ({ key: value, text: value }));
 
-  constructor(props: ICalendarPanelAddProps) {
+  constructor(props: ICalendarPanelEditProps) {
     super(props);
     if (this.props.item == null) {
       this.state = {
@@ -60,23 +60,23 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
     }
   }
 
-  public render(): React.ReactElement<ICalendarPanelAddProps> {
+  public render(): React.ReactElement<ICalendarPanelEditProps> {
     return (
       this.props.item
         ? <Office.Panel
-            className={styles.panel}
-            closeButtonAriaLabel="Close"
-            headerText={strings.AddItemLabel}
-            isFooterAtBottom={true}
-            isLightDismiss={true}
-            isOpen={this.props.item != null}
-            onDismiss={() => this.props.onCancel()}
-            onRenderFooterContent={() => (
+          className={styles.panel}
+          closeButtonAriaLabel="Close"
+          headerText={strings.EditItemLabel}
+          isFooterAtBottom={true}
+          isLightDismiss={true}
+          isOpen={this.props.item != null}
+          onDismiss={() => this.props.onCancel()}
+          onRenderFooterContent={() => (
             <div>
               <Office.PrimaryButton
                 className={styles.button}
                 onClick={() => this.props.onSave({
-                  id: 0,
+                  id: this.props.item.id,
                   title: this.state.title,
                   location: this.state.location,
                   beginDate: this.state.beginDate,
@@ -165,30 +165,30 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
                 </li>
                 {
                   this.state.allDayEvent
-                  ? null
-                  : <li>
-                      <div className={styles.time}>
-                        <Office.Dropdown
-                          options={this.hourOptions}
-                          selectedKey={new DateTime(this.state.endDate).format("HH")}
-                          onChange={(event, value) => {
-                            const date = this.state.endDate;
-                            date.setHours(Number.parseInt(value.key.toString()));
-                            this.setState({ endDate: date });
-                          }} />
-                      </div>
-                      <div className={styles.timeseparator}>:</div>
-                      <div className={styles.time}>
-                        <Office.Dropdown
-                          options={this.minuteOptions}
-                          selectedKey={new DateTime(this.state.endDate).format("MM")}
-                          onChange={(event, value) => {
-                            const date = this.state.endDate;
-                            date.setMinutes(Number.parseInt(value.key.toString()));
-                            this.setState({ endDate: date });
-                          }} />
-                      </div>
-                    </li>
+                    ? null
+                    : <li>
+                        <div className={styles.time}>
+                          <Office.Dropdown
+                            options={this.hourOptions}
+                            selectedKey={new DateTime(this.state.endDate).format("HH")}
+                            onChange={(event, value) => {
+                              const date = this.state.endDate;
+                              date.setHours(Number.parseInt(value.key.toString()));
+                              this.setState({ endDate: date });
+                            }} />
+                        </div>
+                        <div className={styles.timeseparator}>:</div>
+                        <div className={styles.time}>
+                          <Office.Dropdown
+                            options={this.minuteOptions}
+                            selectedKey={new DateTime(this.state.endDate).format("MM")}
+                            onChange={(event, value) => {
+                              const date = this.state.endDate;
+                              date.setMinutes(Number.parseInt(value.key.toString()));
+                              this.setState({ endDate: date });
+                            }} />
+                        </div>
+                      </li>
                 }
                 <li>
                   <Office.Toggle
@@ -205,10 +205,11 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
     );
   }
 
-  public componentDidUpdate(prevProps: ICalendarPanelAddProps, prevState: ICalendarPanelAddState): void {
+  public componentDidUpdate(prevProps: ICalendarPanelEditProps, prevState: ICalendarPanelEditState): void {
     if (this.props.item == prevProps.item) {
       return;
     }
+    console.log(this.props.item);
     if (this.props.item == null) {
       this.setState({
         title: null,
