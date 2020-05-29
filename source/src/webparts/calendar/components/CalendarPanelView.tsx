@@ -41,7 +41,7 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
             isOpen={this.props.item != null}
             onDismiss={() => this.props.onCancel()}
             onRenderFooterContent={() =>
-              <div>
+              <div className={styles.footer}>
                 {
                   this.props.permission.canEdit && !this.props.item.recurrence
                     ? <Office.PrimaryButton

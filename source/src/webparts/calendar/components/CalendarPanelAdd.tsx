@@ -72,7 +72,7 @@ export class CalendarPanelAdd extends React.Component<ICalendarPanelAddProps, IC
             isOpen={this.props.item != null}
             onDismiss={() => this.props.onCancel()}
             onRenderFooterContent={() => (
-            <div>
+            <div className={styles.footer}>
               <Office.PrimaryButton
                 className={styles.button}
                 onClick={() => this.props.onSave({
