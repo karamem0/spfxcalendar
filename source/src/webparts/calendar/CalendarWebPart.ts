@@ -11,7 +11,10 @@ import { SPHttpClient } from '@microsoft/sp-http';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { ICalendarProps, Calendar } from './components/Calendar';
+import {
+  ICalendarProps,
+  Calendar
+} from './components/Calendar';
 import { CalendarService } from './services/CalendarService';
 
 export interface ICalendarWebPartProps {
@@ -62,7 +65,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.4.0');
+    return Version.parse('1.4.1');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
