@@ -48,14 +48,14 @@ export class CalendarService {
     }
     const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().local().toDate();
     const calendarEndDate = new DateTime(date).endOfMonth().endOfWeek().nextDay().local().toDate();
-    return new Promise<Array<IEventItem>>((resolve: (value?: Array<IEventItem>) => void) => resolve([]))
-      .then(async (items: Array<IEventItem>) => {
+    return new Promise<Array<IEventItem>>((resolve: (value?: Array<IEventItem>) => void) => resolve(new Array<IEventItem>()))
+      .then(async (items) => {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
           `?$filter=` +
-          `EventDate ge datetime'${calendarBeginDate.toISOString()}' and  ` +
           `EventDate lt datetime'${calendarEndDate.toISOString()}' and ` +
+          `EndDate ge datetime'${calendarBeginDate.toISOString()}' and ` +
           `fRecurrence eq 0` +
           `&$orderby=EventDate`,
           SPHttpClient.configurations.v1);
@@ -63,13 +63,14 @@ export class CalendarService {
         if (data.error) {
           throw data.error;
         }
+        console.log(data);
         data.value.forEach((value: any) =>
           MultipleItemGererator
             .generate(new EventItem(value))
             .forEach((item) => items.push(item)));
         return items;
       })
-      .then(async (items: Array<IEventItem>) => {
+      .then(async (items) => {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
