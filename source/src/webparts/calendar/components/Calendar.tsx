@@ -11,9 +11,8 @@ import {
 import { CalendarPanelView } from './CalendarPanelView';
 import { CalendarPanelAdd } from './CalendarPanelAdd';
 import { CalendarPanelEdit } from './CalendarPanelEdit';
-import { IPermissionInformation } from './IPermissionInformation';
-import { EventItem } from '../models/EventItem';
-import { PermissionKind } from '../models/Permission';
+import { IEventItem } from './IEventItem';
+import { IPermission } from './IPermission';
 import { CalendarService } from '../services/CalendarService';
 import { DateTime } from '../utils/DateTime';
 
@@ -23,11 +22,11 @@ export interface ICalendarProps {
 
 export interface ICalendarState {
   date: Date;
-  permission: IPermissionInformation;
-  items: Array<EventItem>;
-  itemView: EventItem;
-  itemAdd: EventItem;
-  itemEdit: EventItem;
+  permission: IPermission;
+  items: Array<IEventItem>;
+  itemView: IEventItem;
+  itemAdd: IEventItem;
+  itemEdit: IEventItem;
   isCalloutVisible: boolean;
   error: string;
 }
@@ -175,14 +174,10 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
   public async componentDidMount(): Promise<void> {
     try {
       const items = await this.props.service.getItems(this.state.date);
-      const perm = await this.props.service.getBasePermission();
+      const permission = await this.props.service.getBasePermission();
       this.setState({
         items: items,
-        permission: {
-          canAdd: perm.has(PermissionKind.AddListItems),
-          canEdit: perm.has(PermissionKind.EditListItems),
-          canDelete: perm.has(PermissionKind.DeleteListItems)
-        },
+        permission: permission,
         error: null
       });
     } catch (error) {
@@ -197,14 +192,10 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
     try {
       const items = await this.props.service.getItems(this.state.date);
-      const perm = await this.props.service.getBasePermission();
+      const permission = await this.props.service.getBasePermission();
       this.setState({
         items: items,
-        permission: {
-          canAdd: perm.has(PermissionKind.AddListItems),
-          canEdit: perm.has(PermissionKind.EditListItems),
-          canDelete: perm.has(PermissionKind.DeleteListItems)
-        },
+        permission: permission,
         error: null
       });
     } catch (error) {
@@ -297,7 +288,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     });
   }
 
-  public async onItemView(item: EventItem): Promise<void> {
+  public async onItemView(item: IEventItem): Promise<void> {
     try {
       if (item.recurrence) {
         this.setState({ itemView: item });
@@ -310,7 +301,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemAdd(item: EventItem): Promise<void> {
+  public async onItemAdd(item: IEventItem): Promise<void> {
     try {
       await this.props.service.createItem(item);
       const items = await this.props.service.getItems(this.state.date);
@@ -325,7 +316,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemEdit(item: EventItem): Promise<void> {
+  public async onItemEdit(item: IEventItem): Promise<void> {
     try {
       await this.props.service.updateItem(item);
       const items = await this.props.service.getItems(this.state.date);
@@ -340,7 +331,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemDelete(item: EventItem): Promise<void> {
+  public async onItemDelete(item: IEventItem): Promise<void> {
     try {
       await this.props.service.deleteItem(item);
       const items = await this.props.service.getItems(this.state.date);

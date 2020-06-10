@@ -3,8 +3,13 @@ import { SPHttpClient } from '@microsoft/sp-http';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { Permission } from '../models/Permission';
+import { IEventItem } from '../components/IEventItem';
+import { IPermission } from '../components/IPermission';
 import { EventItem } from '../models/EventItem';
+import {
+  Permission,
+  PermissionKind
+} from '../models/Permission';
 import { DateTime } from '../utils/DateTime';
 import { RecurrenceItemGenerator } from '../utils/RecurrenceItemGenerator';
 import { MultipleItemGererator } from '../utils/MultipleItemGenerator';
@@ -15,7 +20,7 @@ export class CalendarService {
     public readonly context: WebPartContext,
     public readonly listId: string) { }
 
-  public async getBasePermission(): Promise<Permission> {
+  public async getBasePermission(): Promise<IPermission> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }
@@ -29,17 +34,22 @@ export class CalendarService {
     if (data.error) {
       throw data.error;
     }
-    return new Permission(data);
+    const permission = new Permission(data);
+    return {
+      canAdd: permission.has(PermissionKind.AddListItems),
+      canEdit: permission.has(PermissionKind.EditListItems),
+      canDelete: permission.has(PermissionKind.DeleteListItems)
+    };
   }
 
-  public async getItems(date: Date): Promise<Array<EventItem>> {
+  public async getItems(date: Date): Promise<Array<IEventItem>> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }
     const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().local().toDate();
     const calendarEndDate = new DateTime(date).endOfMonth().endOfWeek().nextDay().local().toDate();
-    return new Promise<Array<EventItem>>((resolve: (value?: Array<EventItem>) => void) => resolve([]))
-      .then(async (items: Array<EventItem>) => {
+    return new Promise<Array<IEventItem>>((resolve: (value?: Array<IEventItem>) => void) => resolve([]))
+      .then(async (items: Array<IEventItem>) => {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
@@ -55,11 +65,11 @@ export class CalendarService {
         }
         data.value.forEach((value: any) =>
           MultipleItemGererator
-            .generate(value)
+            .generate(new EventItem(value))
             .forEach((item) => items.push(item)));
         return items;
       })
-      .then(async (items: Array<EventItem>) => {
+      .then(async (items: Array<IEventItem>) => {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
@@ -75,13 +85,13 @@ export class CalendarService {
         }
         data.value.forEach((value: any) =>
           RecurrenceItemGenerator
-            .generate(value, date)
+            .generate(new EventItem(value), date)
             .forEach((item) => items.push(item)));
         return items;
       });
   }
 
-  public async getItem(id: number): Promise<EventItem> {
+  public async getItem(id: number): Promise<IEventItem> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }
@@ -93,10 +103,19 @@ export class CalendarService {
     if (data.error) {
       throw data.error;
     }
-    return new EventItem(data);
+    const item = new EventItem(data);
+    return {
+      id: item.id,
+      title: item.title,
+      location: item.location,
+      beginDate: item.beginDate,
+      endDate: item.endDate,
+      allDayEvent: item.allDayEvent,
+      recurrence: null
+    };
   }
 
-  public async createItem(item: EventItem): Promise<void> {
+  public async createItem(item: IEventItem): Promise<void> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }
@@ -121,7 +140,7 @@ export class CalendarService {
     }
   }
 
-  public async updateItem(item: EventItem): Promise<void> {
+  public async updateItem(item: IEventItem): Promise<void> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }
@@ -150,7 +169,7 @@ export class CalendarService {
     }
   }
 
-  public async deleteItem(item: EventItem): Promise<void> {
+  public async deleteItem(item: IEventItem): Promise<void> {
     if (this.listId == null) {
       throw new Error(strings.NoListSelectedError);
     }

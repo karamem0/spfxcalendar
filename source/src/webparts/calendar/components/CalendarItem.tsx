@@ -4,12 +4,12 @@ import * as Office from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { EventItem } from '../models/EventItem';
+import { IEventItem } from './IEventItem';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarItemProps {
-  item: EventItem;
-  onItemSelect: Function;
+  item: IEventItem;
+  onItemSelect: (value: IEventItem) => void;
 }
 
 export interface ICalendarItemState { }

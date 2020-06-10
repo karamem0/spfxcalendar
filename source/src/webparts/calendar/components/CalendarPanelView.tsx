@@ -4,15 +4,15 @@ import * as Office from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { IPermissionInformation } from './IPermissionInformation';
-import { EventItem } from '../models/EventItem';
+import { IEventItem } from './IEventItem';
+import { IPermission } from './IPermission';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarPanelViewProps {
-  item: EventItem;
-  permission: IPermissionInformation;
-  onEdit: (value: EventItem) => void;
-  onDelete: (value: EventItem) => void;
+  item: IEventItem;
+  permission: IPermission;
+  onEdit: (value: IEventItem) => void;
+  onDelete: (value: IEventItem) => void;
   onCancel: () => void;
 }
 

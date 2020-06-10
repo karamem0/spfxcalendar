@@ -1,16 +1,24 @@
+import { IEventItem } from "../components/IEventItem";
 import { EventItem } from "../models/EventItem";
 import { DateTime } from "./DateTime";
 
 export class MultipleItemGererator {
 
-  public static generate(data: any): Array<EventItem> {
-    const item = new EventItem(data);
-    const result = new Array<EventItem>();
+  public static generate(item: EventItem): Array<IEventItem> {
+    const result = new Array<IEventItem>();
     const diff = DateTime.diffDates(
       new DateTime(item.beginDate).beginOfDate().toDate(),
       new DateTime(item.endDate).beginOfDate().toDate());
     if (diff == 0) {
-      result.push(item);
+      result.push({
+        id: item.id,
+        title: item.title,
+        location: item.location,
+        beginDate: item.beginDate,
+        endDate: item.endDate,
+        allDayEvent: item.allDayEvent,
+        recurrence: null
+      });
     } else {
       result.push({
         id: item.id,

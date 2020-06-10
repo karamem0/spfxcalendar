@@ -5,17 +5,17 @@ import {
   ICalendarDateProps,
   CalendarDate
 } from './CalendarDate';
-import { IPermissionInformation } from './IPermissionInformation';
-import { EventItem } from '../models/EventItem';
+import { IEventItem } from './IEventItem';
+import { IPermission } from './IPermission';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarWeekProps {
   beginDate: Date;
   endDate: Date;
-  permission: IPermissionInformation;
-  items: Array<EventItem>;
-  onItemAdd: (value: EventItem) => void;
-  onItemSelect: (value: EventItem) => void;
+  permission: IPermission;
+  items: Array<IEventItem>;
+  onItemAdd: (value: IEventItem) => void;
+  onItemSelect: (value: IEventItem) => void;
 }
 
 export interface ICalendarWeekState { }
