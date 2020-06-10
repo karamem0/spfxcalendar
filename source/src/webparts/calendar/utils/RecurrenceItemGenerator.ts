@@ -1,6 +1,7 @@
 import * as strings from 'CalendarWebPartStrings';
 import * as xml2js from 'xml2js';
 
+import { IEventItem } from '../components/IEventItem';
 import { EventItem } from '../models/EventItem';
 import { DateTime } from './DateTime';
 
@@ -297,10 +298,9 @@ class RecurrenceData {
 
 export class RecurrenceItemGenerator {
 
-  public static generate(data: any, date: Date): Array<EventItem> {
-    const item = new EventItem(data);
-    const result = new Array<EventItem>();
-    const recurrenceData = RecurrenceData.parse(data.RecurrenceData);
+  public static generate(item: EventItem, date: Date): Array<IEventItem> {
+    const result = new Array<IEventItem>();
+    const recurrenceData = RecurrenceData.parse(item.recurrenceData);
     const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().toDate();
     const calendarEndDate = new DateTime(date).endOfMonth().endOfWeek().nextDay().toDate();
     if (recurrenceData.rule.repeat.yearly != undefined) {

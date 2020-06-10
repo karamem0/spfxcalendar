@@ -4,12 +4,12 @@ import * as Office from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
-import { EventItem } from '../models/EventItem';
+import { IEventItem } from './IEventItem';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarPanelEditProps {
-  item: EventItem;
-  onSave: (value: EventItem) => void;
+  item: IEventItem;
+  onSave: (value: IEventItem) => void;
   onCancel: () => void;
 }
 
@@ -209,7 +209,6 @@ export class CalendarPanelEdit extends React.Component<ICalendarPanelEditProps, 
     if (this.props.item == prevProps.item) {
       return;
     }
-    console.log(this.props.item);
     if (this.props.item == null) {
       this.setState({
         title: null,

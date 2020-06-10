@@ -8,15 +8,15 @@ import {
   ICalendarItemProps,
   CalendarItem
 } from './CalendarItem';
-import { IPermissionInformation } from './IPermissionInformation';
-import { EventItem } from '../models/EventItem';
+import { IEventItem } from './IEventItem';
+import { IPermission } from './IPermission';
 
 export interface ICalendarDateProps {
   date: Date;
-  permission: IPermissionInformation;
-  items: Array<EventItem>;
-  onItemAdd: (value: EventItem) => void;
-  onItemSelect: (value: EventItem) => void;
+  permission: IPermission;
+  items: Array<IEventItem>;
+  onItemAdd: (value: IEventItem) => void;
+  onItemSelect: (value: IEventItem) => void;
 }
 
 export interface ICalendarDateState {
@@ -61,10 +61,15 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
                   ? <Office.Link
                       href="javascript:void(0)"
                       onClick={() =>
-                        this.props.onItemAdd(new EventItem({
-                          EventDate: new Date(this.props.date),
-                          EndDate: new Date(this.props.date)
-                        }))
+                        this.props.onItemAdd({
+                          id: null,
+                          title: null,
+                          location: null,
+                          beginDate: new Date(this.props.date),
+                          endDate: new Date(this.props.date),
+                          allDayEvent: false,
+                          recurrence: null
+                        })
                       }>
                       <Office.Icon iconName="Add" />
                       <span>{strings.AddButton}</span>
