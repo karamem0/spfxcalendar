@@ -8,6 +8,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { SPHttpClient } from '@microsoft/sp-http';
+import { initializeIcons } from 'office-ui-fabric-react';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -27,6 +28,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   private listNameDropdownDisabled: boolean = true;
 
   public render(): void {
+    initializeIcons();
     const element: React.ReactElement<ICalendarProps> = React.createElement(
       Calendar,
       {
@@ -65,7 +67,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.5.0');
+    return Version.parse('1.5.1');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
