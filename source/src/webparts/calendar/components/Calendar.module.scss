@@ -25,17 +25,17 @@
 .calendarhead {
   border: solid 1px rgb(229, 229, 229);
   height: 2em;
-  width: 14.28571%;
   text-align: center;
+  width: 14.28571%;
 }
 .calendarweek {
   width: 100%;
 }
 .calendardate {
   border: solid 1px rgb(229, 229, 229);
-  width: 14.28571%;
   text-align: left;
   vertical-align: top;
+  width: 14.28571%;
   .head {
     overflow: hidden;
     .day {
@@ -63,31 +63,31 @@
   }
   .body {
     height: 60px;
-    overflow-y: auto;
     margin: 0 .25em .25em .25em;
+    overflow-y: auto;
   }
 }
 .calendaritem {
   .item {
     font-size: small;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .callout {
   max-width: 240px;
   padding: 12px;
   .label {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: center;
     i {
       font-size: x-small;
     }
   }
   .description {
-    .button {
+    button {
       font-size: small;
       width: 25%;
       div {
@@ -116,26 +116,86 @@
       margin: .5em 0 0 0;
     }
   }
-  .footer {
-    margin: 0 -20px;
-    .button {
+  .foot {
+    display: flex;
+    button {
       margin: 0 .5em 0 0;
     }
   }
-  .time {
-    display: inline-block;
-    width: calc(50% - .5em);
-    vertical-align: top;
+}
+.modal {
+  max-width: 720px;
+  min-width: 480px;
+  padding: 20px;
+  width: 100%;
+  i {
+    font-size: small;
   }
-  .timeseparator {
-    display: inline-block;
-    text-align: center;
-    line-height: 32px;
-    height: 32px;
-    width: 1em;
-    vertical-align: top;
+  .head {
+    display: flex;
+    .title {
+      font-size: large;
+    }
+    .close {
+      margin: 0 0 0 auto;
+    }
   }
-  .rangeseparator {
-    text-align: center;
+  .body {
+    .formlabel {
+      display: table-cell;
+      padding: 0 .5em 0 0;
+    }
+    .formcontrol {
+      display: table-cell;
+      width: 100%;
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      li:not(:first-child) {
+        margin: .5em 0 0 0;
+      }
+    }
+    .date {
+      display: inline-block;
+      margin-right: 1em;
+      vertical-align: top;
+      width: calc(33% - .5em);
+    }
+    .time {
+      display: inline-block;
+      vertical-align: top;
+      width: calc(67% - .5em);
+      .timecontrol {
+        display: inline-block;
+        vertical-align: top;
+        width: calc(50% - .5em);
+      }
+      .timeseparator {
+        display: inline-block;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        vertical-align: top;
+        width: 1em;
+      }
+    }
+    .rangeseparator {
+      display: inline-block;
+      margin-right: 1em;
+      text-align: center;
+      vertical-align: top;
+      width: calc(33% - .5em);
+    }
+  }
+  .foot {
+    display: flex;
+    button {
+      margin: 0 .5em 0 0;
+    }
+    .delete {
+      margin: 0 0 0 auto;
+    }
   }
 }

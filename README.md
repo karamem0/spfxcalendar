@@ -7,7 +7,7 @@ SPFxCalendar is a SharePoint webpart that displays event list items in the calen
 
 ## Download
 
-### [calendar.sppkg](https://github.com/karamem0/spfxcalendar/releases/download/v1.5.1/calendar.sppkg)
+### [calendar.sppkg](https://github.com/karamem0/spfxcalendar/releases/download/v1.5.2/calendar.sppkg)
 
 ## Screenshot
 

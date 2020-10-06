@@ -3,6 +3,7 @@ declare interface ICalendarWebPartStrings {
   AddButton: string;
   AddItemLabel: string;
   CancelButton: string;
+  CloseButton: string;
   DateFormat: string;
   DateTimeFormat: string;
   DateTimeLabel: string;

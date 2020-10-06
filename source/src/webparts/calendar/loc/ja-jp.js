@@ -4,6 +4,7 @@ define([], function () {
     "AddButton": "追加",
     "AddItemLabel": "アイテムの追加",
     "CancelButton": "キャンセル",
+    "CloseButton": "閉じる",
     "DateFormat": "yyyy/m/d",
     "DateTimeFormat": "yyyy/m/d HH:MM",
     "DateTimeLabel": "日時",

@@ -4,6 +4,7 @@ define([], function () {
     "AddButton": "Add",
     "AddItemLabel": "Add item",
     "CancelButton": "Cancel",
+    "CloseButton": "Close",
     "DateFormat": "m/d/yyyy",
     "DateTimeFormat": "m/d/yyyy HH:MM",
     "DateTimeLabel": "Date/Time",
