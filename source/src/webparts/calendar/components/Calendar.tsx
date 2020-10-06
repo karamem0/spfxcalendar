@@ -9,8 +9,8 @@ import {
   CalendarWeek
 } from './CalendarWeek';
 import { CalendarPanelView } from './CalendarPanelView';
-import { CalendarPanelAdd } from './CalendarPanelAdd';
-import { CalendarPanelEdit } from './CalendarPanelEdit';
+import { CalendarModalAdd } from './CalendarModalAdd';
+import { CalendarModalEdit } from './CalendarModalEdit';
 import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
 import { CalendarService } from '../services/CalendarService';
@@ -33,9 +33,9 @@ export interface ICalendarState {
 
 export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
+  private readonly calloutLabelId: string = Office.getId('callout-label');
+  private readonly calloutDescriptionId: string = Office.getId('callout-description');
   private dateButton: HTMLElement;
-  private calloutLabelId: string = Office.getId('callout-label');
-  private calloutDescriptionId: string = Office.getId('callout-description');
 
   constructor(props: ICalendarProps) {
     super(props);
@@ -143,7 +143,6 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
                   {
                     strings.MonthShortNames.map((value, index) => 
                       <Office.ActionButton
-                        className={styles.button}
                         onClick={this.onSetMonth.bind(this, index)}>
                         {value}
                       </Office.ActionButton>
@@ -157,16 +156,17 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
           item={this.state.itemView}
           permission={this.state.permission}
           onEdit={(value) => this.setState({ itemView: null, itemEdit: value })}
-          onDelete={(value) => this.onItemDelete(value)}
           onCancel={() => this.onCancel()} />
-        <CalendarPanelAdd
+        <CalendarModalAdd
           item={this.state.itemAdd}
           onSave={(value) => this.onItemAdd(value)}
           onCancel={() => this.onCancel()} />
-        <CalendarPanelEdit
+        <CalendarModalEdit
           item={this.state.itemEdit}
+          permission={this.state.permission}
           onSave={(value) => this.onItemEdit(value)}
-          onCancel={() => this.onCancel()} />
+          onCancel={() => this.onCancel()}
+          onDelete={(value) => this.onItemDelete(value)} />
       </div>
     );
   }
@@ -337,7 +337,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
       const items = await this.props.service.getItems(this.state.date);
       this.setState({
         items: items,
-        itemView: null,
+        itemEdit: null,
         error: null
       });
     } catch (error) {

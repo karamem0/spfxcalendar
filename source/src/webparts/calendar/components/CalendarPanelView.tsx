@@ -12,7 +12,6 @@ export interface ICalendarPanelViewProps {
   item: IEventItem;
   permission: IPermission;
   onEdit: (value: IEventItem) => void;
-  onDelete: (value: IEventItem) => void;
   onCancel: () => void;
 }
 
@@ -41,27 +40,16 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
             isOpen={this.props.item != null}
             onDismiss={() => this.props.onCancel()}
             onRenderFooterContent={() =>
-              <div className={styles.footer}>
+              <div className={styles.foot}>
                 {
                   this.props.permission.canEdit && !this.props.item.recurrence
                     ? <Office.PrimaryButton
-                        className={styles.button}
                         onClick={() => this.props.onEdit(this.props.item)}>
                         {strings.EditButton}
                       </Office.PrimaryButton>
                     : null
                 }
-                {
-                  this.props.permission.canDelete
-                    ? <Office.PrimaryButton
-                        className={styles.button}
-                        onClick={() => this.props.onDelete(this.props.item)}>
-                        {strings.DeleteButton}
-                      </Office.PrimaryButton>
-                    : null
-                }
                 <Office.DefaultButton
-                  className={styles.button}
                   onClick={() => this.props.onCancel()}>
                   {strings.CancelButton}
                 </Office.DefaultButton>
