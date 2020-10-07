@@ -25,15 +25,22 @@ export class DateTime {
   }
 
   public static enumMonths(beginDate: Date, endDate: Date, callback: { (index: number, date: Date): boolean }): void {
-    let date = new Date(beginDate);
+    let num = beginDate.getFullYear() * 12 + beginDate.getMonth();
     for (let index = 0; ; index++) {
+      const year = Math.floor(num / 12);
+      const month = num % 12;
+      const date = new Date(year, month + 1, 1);
+      date.setDate(0);
+      if (date.getDate() > beginDate.getDate()) {
+        date.setDate(beginDate.getDate());
+      }
       if (date > endDate) {
         break;
       }
       if (!callback(index, new Date(date))) {
         break;
       }
-      date.setMonth(date.getMonth() + 1);
+      num++;
     }
   }
 
@@ -99,6 +106,20 @@ export class DateTime {
 
   public static diffDates(beginDate: Date, endDate: Date): number {
     return Math.floor((endDate.getTime() - beginDate.getTime()) / 86400000);
+  }
+
+  public static getDate(year: number, month: number, day: number): Date {
+    let date = new Date(year, month, day);
+    if (date.getFullYear() > year || date.getMonth() > month) {
+      date = new Date(year, month, 1);
+      date.setMonth(date.getMonth() + 1);
+      date.setDate(0);
+    }
+    return date;
+  }
+
+  public static isWeekday(date: Date): boolean {
+    return date.getDay() >= 1 && date.getDay() <= 5;
   }
 
   private date: Date;
@@ -168,14 +189,34 @@ export class DateTime {
   }
 
   public nextMonth(): DateTime {
-    const date = new Date(this.date);
+    let year = this.date.getFullYear();
+    let month = this.date.getMonth() + 1;
+    if (month == 12) {
+      year++;
+      month = 0;
+    }
+    let date = new Date(year, month, 1);
     date.setMonth(date.getMonth() + 1);
+    date.setDate(0);
+    if (date.getDate() >= this.date.getDate()) {
+      date.setDate(this.date.getDate());
+    }
     return new DateTime(date);
   }
 
   public prevMonth(): DateTime {
-    const date = new Date(this.date);
-    date.setMonth(date.getMonth() - 1);
+    let year = this.date.getFullYear();
+    let month = this.date.getMonth() - 1;
+    if (month == -1) {
+      year--;
+      month = 11;
+    }
+    let date = new Date(year, month, 1);
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(0);
+    if (date.getDate() >= this.date.getDate()) {
+      date.setDate(this.date.getDate());
+    }
     return new DateTime(date);
   }
 
@@ -207,11 +248,19 @@ export class DateTime {
     return new DateTime(new Date(this.date.getTime() + this.date.getTimezoneOffset() * 60 * 1000));
   }
 
-  public setTime(time: Date): DateTime {
+  public setDate(value: Date): DateTime {
     const date = new Date(this.date);
-    date.setHours(time.getHours());
-    date.setMinutes(time.getMinutes());
-    date.setSeconds(time.getSeconds());
+    date.setFullYear(value.getFullYear());
+    date.setMonth(value.getMonth());
+    date.setDate(value.getDate());
+    return new DateTime(date);
+  }
+
+  public setTime(value: Date): DateTime {
+    const date = new Date(this.date);
+    date.setHours(value.getHours());
+    date.setMinutes(value.getMinutes());
+    date.setSeconds(value.getSeconds());
     return new DateTime(date);
   }
 

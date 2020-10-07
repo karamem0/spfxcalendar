@@ -1,5 +1,6 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { SPHttpClient } from '@microsoft/sp-http';
+import { v4 as uuidv4 } from 'uuid';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -10,6 +11,7 @@ import {
   Permission,
   PermissionKind
 } from '../models/Permission';
+import { RecurrenceData } from '../models/RecurrenceData';
 import { DateTime } from '../utils/DateTime';
 import { RecurrenceItemGenerator } from '../utils/RecurrenceItemGenerator';
 import { MultipleItemGererator } from '../utils/MultipleItemGenerator';
@@ -21,7 +23,7 @@ export class CalendarService {
     public readonly listId: string) { }
 
   public async getBasePermission(): Promise<IPermission> {
-    if (this.listId == null) {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const response = await this.context.spHttpClient
@@ -43,7 +45,7 @@ export class CalendarService {
   }
 
   public async getItems(date: Date): Promise<Array<IEventItem>> {
-    if (this.listId == null) {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const calendarBeginDate = new DateTime(date).beginOfMonth().beginOfWeek().prevDay().local().toDate();
@@ -53,7 +55,8 @@ export class CalendarService {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
-          `?$filter=` +
+          `?$select=*,EventType,RecurrenceData` +
+          `&$filter=` +
           `EventDate lt datetime'${calendarEndDate.toISOString()}' and ` +
           `EndDate ge datetime'${calendarBeginDate.toISOString()}' and ` +
           `fRecurrence eq 0` +
@@ -63,7 +66,6 @@ export class CalendarService {
         if (data.error) {
           throw data.error;
         }
-        console.log(data);
         data.value.forEach((value: any) =>
           MultipleItemGererator
             .generate(new EventItem(value))
@@ -74,9 +76,10 @@ export class CalendarService {
         const response = await this.context.spHttpClient.get(
           this.context.pageContext.web.serverRelativeUrl +
           `/_api/web/lists/getbyid(guid'${this.listId}')/items` +
-          `?$select=*,RecurrenceData` +
+          `?$select=*,EventType,RecurrenceData` +
           `&$filter=` +
           `EventDate lt datetime'${calendarEndDate.toISOString()}' and ` +
+          `EndDate ge datetime'${calendarBeginDate.toISOString()}' and ` +
           `fRecurrence eq 1` +
           `&$orderby=EventDate`,
           SPHttpClient.configurations.v1);
@@ -93,18 +96,41 @@ export class CalendarService {
   }
 
   public async getItem(id: number): Promise<IEventItem> {
-    if (this.listId == null) {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const response = await this.context.spHttpClient.get(
       this.context.pageContext.web.serverRelativeUrl +
-      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})`,
+      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})` + 
+      `?$select=*,EventType,RecurrenceData`,
       SPHttpClient.configurations.v1);
     const data = await response.json();
     if (data.error) {
       throw data.error;
     }
+    console.log(data);
     const item = new EventItem(data);
+    const recurrenceData = RecurrenceData.parse(item.recurrenceData);
+    const recurrenceText = (() => {
+      if (recurrenceData.rule.repeat.yearly) {
+        return strings.RecurrenceYearlyLabel;
+      }
+      if (recurrenceData.rule.repeat.yearlyByDay) {
+        return strings.RecurrenceYearlyLabel;
+      }
+      if (recurrenceData.rule.repeat.monthly) {
+        return strings.RecurrenceMonthlyLabel;
+      }
+      if (recurrenceData.rule.repeat.monthlyByDay) {
+        return strings.RecurrenceMonthlyLabel;
+      }
+      if (recurrenceData.rule.repeat.weekly) {
+        return strings.RecurrenceWeeklyLabel;
+      }
+      if (recurrenceData.rule.repeat.daily) {
+        return strings.RecurrenceDailyLabel;
+      }
+    })();
     return {
       id: item.id,
       title: item.title,
@@ -112,12 +138,13 @@ export class CalendarService {
       beginDate: item.beginDate,
       endDate: item.endDate,
       allDayEvent: item.allDayEvent,
-      recurrence: null
+      recurrence: item.recurrence,
+      recurrenceText: recurrenceText
     };
   }
 
-  public async createItem(item: IEventItem): Promise<void> {
-    if (this.listId == null) {
+  public async createItem(item: EventItem): Promise<void> {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const response = await this.context.spHttpClient.post(
@@ -130,7 +157,11 @@ export class CalendarService {
           Location: item.location,
           EventDate: item.beginDate,
           EndDate: item.endDate,
-          fAllDayEvent: item.allDayEvent
+          EventType: item.eventType,
+          fAllDayEvent: item.allDayEvent,
+          fRecurrence: item.recurrence,
+          RecurrenceData: item.recurrenceData,
+          UID: uuidv4()
         })
       });
     if (!response.ok) {
@@ -141,8 +172,8 @@ export class CalendarService {
     }
   }
 
-  public async updateItem(item: IEventItem): Promise<void> {
-    if (this.listId == null) {
+  public async updateItem(item: EventItem): Promise<void> {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const response = await this.context.spHttpClient.post(
@@ -159,7 +190,10 @@ export class CalendarService {
           Location: item.location,
           EventDate: item.beginDate,
           EndDate: item.endDate,
-          fAllDayEvent: item.allDayEvent
+          EventType: item.eventType,
+          fAllDayEvent: item.allDayEvent,
+          fRecurrence: item.recurrence,
+          RecurrenceData: item.recurrenceData
         })
       });
     if (!response.ok) {
@@ -170,13 +204,13 @@ export class CalendarService {
     }
   }
 
-  public async deleteItem(item: IEventItem): Promise<void> {
-    if (this.listId == null) {
+  public async deleteItem(id: number): Promise<void> {
+    if (!this.listId) {
       throw new Error(strings.NoListSelectedError);
     }
     const response = await this.context.spHttpClient.post(
       this.context.pageContext.web.serverRelativeUrl +
-      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${item.id})`,
+      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})`,
       SPHttpClient.configurations.v1,
       {
         headers: {

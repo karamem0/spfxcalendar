@@ -68,7 +68,8 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
                           beginDate: new Date(this.props.date),
                           endDate: new Date(this.props.date),
                           allDayEvent: false,
-                          recurrence: null
+                          recurrence: false,
+                          recurrenceText: null
                         })
                       }>
                       <Office.Icon iconName="Add" />

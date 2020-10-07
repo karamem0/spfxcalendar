@@ -44,7 +44,7 @@ export class Permission {
   public low: number;
 
   constructor(value?: any) {
-    if (value == null) {
+    if (!value) {
       return;
     }
     this.high = value.High;

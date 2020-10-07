@@ -17,7 +17,8 @@ export class MultipleItemGererator {
         beginDate: item.beginDate,
         endDate: item.endDate,
         allDayEvent: item.allDayEvent,
-        recurrence: null
+        recurrence: item.recurrence,
+        recurrenceText: null,
       });
     } else {
       result.push({
@@ -27,7 +28,8 @@ export class MultipleItemGererator {
         beginDate: item.beginDate,
         endDate: new DateTime(item.beginDate).endOfDate().toDate(),
         allDayEvent: item.allDayEvent,
-        recurrence: null
+        recurrence: item.recurrence,
+        recurrenceText: null,
       });
       for (let index = 1; index < diff; index++) {
         const date = new Date(item.beginDate);
@@ -39,8 +41,9 @@ export class MultipleItemGererator {
           beginDate: new DateTime(date).beginOfDate().toDate(),
           endDate: new DateTime(date).endOfDate().toDate(),
           allDayEvent: item.allDayEvent,
-          recurrence: null
-        });
+          recurrence: item.recurrence,
+          recurrenceText: null,
+          });
       }
       result.push({
         id: item.id,
@@ -49,7 +52,8 @@ export class MultipleItemGererator {
         beginDate: new DateTime(item.endDate).beginOfDate().toDate(),
         endDate: item.endDate,
         allDayEvent: item.allDayEvent,
-        recurrence: null
+        recurrence: item.recurrence,
+        recurrenceText: null,
       });
     }
     return result;

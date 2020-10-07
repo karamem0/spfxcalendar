@@ -5,5 +5,6 @@ export interface IEventItem {
   beginDate: Date;
   endDate: Date;
   allDayEvent: boolean;
-  recurrence: string;
+  recurrence: boolean;
+  recurrenceText: string;
 }

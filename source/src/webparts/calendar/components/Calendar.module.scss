@@ -25,17 +25,17 @@
 .calendarhead {
   border: solid 1px rgb(229, 229, 229);
   height: 2em;
-  text-align: center;
   width: 14.28571%;
+  text-align: center;
 }
 .calendarweek {
   width: 100%;
 }
 .calendardate {
   border: solid 1px rgb(229, 229, 229);
+  width: 14.28571%;
   text-align: left;
   vertical-align: top;
-  width: 14.28571%;
   .head {
     overflow: hidden;
     .day {
@@ -63,24 +63,24 @@
   }
   .body {
     height: 60px;
-    margin: 0 .25em .25em .25em;
     overflow-y: auto;
+    margin: 0 .25em .25em .25em;
   }
 }
 .calendaritem {
   .item {
     font-size: small;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }
 .callout {
   max-width: 240px;
   padding: 12px;
   .label {
-    align-items: center;
     display: flex;
+    align-items: center;
     justify-content: center;
     i {
       font-size: x-small;
@@ -126,12 +126,15 @@
 .modal {
   max-width: 720px;
   min-width: 480px;
-  padding: 20px;
   width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
   i {
     font-size: small;
   }
   .head {
+    margin: 20px;
     display: flex;
     .title {
       font-size: large;
@@ -141,6 +144,7 @@
     }
   }
   .body {
+    margin: 20px;
     .formlabel {
       display: table-cell;
       padding: 0 .5em 0 0;
@@ -156,6 +160,11 @@
       li:not(:first-child) {
         margin: .5em 0 0 0;
       }
+    }
+    .flex {
+      align-items: baseline;
+      display: flex;
+      flex-wrap: wrap;
     }
     .date {
       display: inline-block;
@@ -188,9 +197,26 @@
       vertical-align: top;
       width: calc(33% - .5em);
     }
+    .repeat {
+      display: inline-block;
+      margin-right: 1em;
+      vertical-align: top;
+      width: calc(33% - .5em);
+    }
+    .pattern {
+      display: inline-block;
+      vertical-align: top;
+      width: calc(67% - .5em);
+    }
+    .rule {
+      display: inline-block;
+      vertical-align: top;
+      width: calc(67% - .5em);
+    }
   }
   .foot {
     display: flex;
+    margin: 20px;
     button {
       margin: 0 .5em 0 0;
     }
