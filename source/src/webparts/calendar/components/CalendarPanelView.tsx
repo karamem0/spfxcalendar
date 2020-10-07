@@ -42,7 +42,7 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
             onRenderFooterContent={() =>
               <div className={styles.foot}>
                 {
-                  this.props.permission.canEdit && !this.props.item.recurrence
+                  this.props.permission.canEdit || this.props.permission.canDelete
                     ? <Office.PrimaryButton
                         onClick={() => this.props.onEdit(this.props.item)}>
                         {strings.EditButton}
@@ -62,7 +62,7 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                       <Office.Icon iconName="Sync" title={strings.RecurrenceLabel} />
                     </div>
                     <div className={styles.formcontrol}>
-                      {this.props.item.recurrence}
+                      {this.props.item.recurrenceText}
                     </div>
                   </p>
                 : null

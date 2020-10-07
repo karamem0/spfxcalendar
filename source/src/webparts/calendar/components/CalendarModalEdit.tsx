@@ -6,14 +6,15 @@ import * as strings from 'CalendarWebPartStrings';
 
 import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
+import { EventItem } from '../models/EventItem';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarModalEditProps {
   item: IEventItem;
   permission: IPermission;
-  onSave: (value: IEventItem) => void;
+  onSave: (value: EventItem) => void;
   onCancel: () => void;
-  onDelete: (value: IEventItem) => void;
+  onDelete: (id: number) => void;
 }
 
 export interface ICalendarModalEditState {
@@ -45,21 +46,21 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
 
   constructor(props: ICalendarModalEditProps) {
     super(props);
-    if (this.props.item == null) {
-      this.state = {
-        title: null,
-        location: null,
-        beginDate: null,
-        endDate: null,
-        allDayEvent: false
-      };
-    } else {
+    if (this.props.item) {
       this.state = {
         title: this.props.item.title,
         location: this.props.item.location,
         beginDate: this.props.item.beginDate,
         endDate: this.props.item.endDate,
         allDayEvent: this.props.item.allDayEvent
+      };
+    } else {
+      this.state = {
+        title: null,
+        location: null,
+        beginDate: null,
+        endDate: null,
+        allDayEvent: false
       };
     }
   }
@@ -183,30 +184,45 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                           </div>
                     }
                     </li>
+                  </ul>
+                </div>
+              </p>
+              <p>
+                <div className={styles.formlabel}>
+                  <Office.Icon iconName="Clock" title={strings.AllDayEventLabel} />
+                </div>
+                <div className={styles.formcontrol}>
+                  <ul>
                     <li>
-                    <Office.Toggle
-                      checked={this.state.allDayEvent}
-                      inlineLabel={true}
-                      label={strings.AllDayEventLabel}
-                      onChange={(event, value) => this.setState({ allDayEvent: value })} />
+                      <Office.Toggle
+                        checked={this.state.allDayEvent}
+                        inlineLabel={true}
+                        label={strings.AllDayEventLabel}
+                        onChange={(event, value) => this.setState({ allDayEvent: value })} />
                     </li>
                   </ul>
                 </div>
               </p>
             </div>
             <div className={styles.foot}>
-              <Office.PrimaryButton
-                onClick={() => this.props.onSave({
-                  id: this.props.item.id,
-                  title: this.state.title,
-                  location: this.state.location,
-                  beginDate: this.state.beginDate,
-                  endDate: this.state.endDate,
-                  allDayEvent: this.state.allDayEvent,
-                  recurrence: null
-                })}>
-                {strings.SaveButton}
-              </Office.PrimaryButton>
+              {
+                this.props.permission.canEdit
+                  ? <Office.PrimaryButton
+                      onClick={() => this.props.onSave({
+                        id: this.props.item.id,
+                        title: this.state.title,
+                        location: this.state.location,
+                        beginDate: this.state.beginDate,
+                        endDate: this.state.endDate,
+                        allDayEvent: this.state.allDayEvent,
+                        eventType: 0,
+                        recurrence: false,
+                        recurrenceData: null
+                      })}>
+                      {strings.SaveButton}
+                    </Office.PrimaryButton>
+                  : null
+              }
               <Office.DefaultButton
                 onClick={() => this.props.onCancel()}>
                 {strings.CancelButton}
@@ -215,7 +231,7 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                 this.props.permission.canDelete
                   ? <Office.PrimaryButton
                       className={styles.delete}
-                      onClick={() => this.props.onDelete(this.props.item)}>
+                      onClick={() => this.props.onDelete(this.props.item.id)}>
                       {strings.DeleteButton}
                     </Office.PrimaryButton>
                   : null
@@ -230,21 +246,21 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
     if (this.props.item == prevProps.item) {
       return;
     }
-    if (this.props.item == null) {
-      this.setState({
-        title: null,
-        location: null,
-        beginDate: null,
-        endDate: null,
-        allDayEvent: false
-      });
-    } else {
+    if (this.props.item) {
       this.setState({
         title: this.props.item.title,
         location: this.props.item.location,
         beginDate: this.props.item.beginDate,
         endDate: this.props.item.endDate,
         allDayEvent: this.props.item.allDayEvent
+      });
+    } else {
+      this.setState({
+        title: null,
+        location: null,
+        beginDate: null,
+        endDate: null,
+        allDayEvent: false,
       });
     }
   }

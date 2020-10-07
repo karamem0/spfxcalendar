@@ -7,11 +7,13 @@ export class EventItem {
   public location: string;
   public beginDate: Date;
   public endDate: Date;
+  public eventType: number;
   public allDayEvent: boolean;
+  public recurrence: boolean;
   public recurrenceData: string;
 
   constructor(data?: any) {
-    if (data == null) {
+    if (!data) {
       return;
     }
     this.id = data.Id;
@@ -23,7 +25,9 @@ export class EventItem {
     this.endDate = data.fAllDayEvent
       ? new DateTime(data.EndDate).universal().toDate()
       : new Date(Date.parse(data.EndDate));
+    this.eventType = data.EventType;
     this.allDayEvent = data.fAllDayEvent;
+    this.recurrence = data.fRecurrence;
     this.recurrenceData = data.RecurrenceData;
   }
 

@@ -13,6 +13,7 @@ import { CalendarModalAdd } from './CalendarModalAdd';
 import { CalendarModalEdit } from './CalendarModalEdit';
 import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
+import { EventItem } from '../models/EventItem';
 import { CalendarService } from '../services/CalendarService';
 import { DateTime } from '../utils/DateTime';
 
@@ -33,9 +34,9 @@ export interface ICalendarState {
 
 export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
 
-  private readonly calloutLabelId: string = Office.getId('callout-label');
-  private readonly calloutDescriptionId: string = Office.getId('callout-description');
   private dateButton: HTMLElement;
+  private calloutLabelId: string = Office.getId('callout-label');
+  private calloutDescriptionId: string = Office.getId('callout-description');
 
   constructor(props: ICalendarProps) {
     super(props);
@@ -166,7 +167,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
           permission={this.state.permission}
           onSave={(value) => this.onItemEdit(value)}
           onCancel={() => this.onCancel()}
-          onDelete={(value) => this.onItemDelete(value)} />
+          onDelete={(id) => this.onItemDelete(id)} />
       </div>
     );
   }
@@ -291,9 +292,9 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
   public async onItemView(item: IEventItem): Promise<void> {
     try {
       if (item.recurrence) {
-        this.setState({ itemView: item });
-      } else {
         this.setState({ itemView: await this.props.service.getItem(item.id) });
+      } else {
+        this.setState({ itemView: item });
       }
     } catch (error) {
       console.error(error);
@@ -301,7 +302,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemAdd(item: IEventItem): Promise<void> {
+  public async onItemAdd(item: EventItem): Promise<void> {
     try {
       await this.props.service.createItem(item);
       const items = await this.props.service.getItems(this.state.date);
@@ -316,7 +317,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemEdit(item: IEventItem): Promise<void> {
+  public async onItemEdit(item: EventItem): Promise<void> {
     try {
       await this.props.service.updateItem(item);
       const items = await this.props.service.getItems(this.state.date);
@@ -331,9 +332,9 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     }
   }
 
-  public async onItemDelete(item: IEventItem): Promise<void> {
+  public async onItemDelete(id: number): Promise<void> {
     try {
-      await this.props.service.deleteItem(item);
+      await this.props.service.deleteItem(id);
       const items = await this.props.service.getItems(this.state.date);
       this.setState({
         items: items,
