@@ -3,7 +3,7 @@
   "solution": {
     "name": "Calendar",
     "id": "a1f999b8-7b84-41d8-8f05-3f8c02dd3688",
-    "version": "1.5.3.0",
+    "version": "1.5.4.0",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
     "skipFeatureDeployment": true,

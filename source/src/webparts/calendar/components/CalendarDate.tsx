@@ -57,25 +57,29 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
           <div className={styles.add}>
             <div className={styles.addinner}>
               {
-                this.props.permission.canAdd && this.state.isAddVisible
-                  ? <Office.Link
-                      href="javascript:void(0)"
-                      onClick={() =>
-                        this.props.onItemAdd({
-                          id: null,
-                          title: null,
-                          location: null,
-                          beginDate: new Date(this.props.date),
-                          endDate: new Date(this.props.date),
-                          allDayEvent: false,
-                          recurrence: false,
-                          recurrenceText: null
-                        })
-                      }>
-                      <Office.Icon iconName="Add" />
-                      <span>{strings.AddButton}</span>
-                    </Office.Link>
-                  : null
+                (() => {
+                  if (this.props.permission.canAdd && this.state.isAddVisible) {
+                    return (
+                      <Office.Link
+                        href="javascript:void(0)"
+                        onClick={() =>
+                          this.props.onItemAdd({
+                            id: null,
+                            title: null,
+                            location: null,
+                            beginDate: new Date(this.props.date),
+                            endDate: new Date(this.props.date),
+                            allDayEvent: false,
+                            recurrence: false,
+                            recurrenceText: null
+                          })
+                        }>
+                        <Office.Icon iconName="Add" />
+                        <span>{strings.AddButton}</span>
+                      </Office.Link>
+                    );
+                  }
+                })()
               }
             </div>
           </div>
