@@ -18,14 +18,17 @@
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": {
       "default": "Other",
+      "en-US": "Other",
       "ja-JP": "その他"
     },
     "title": {
       "default": "Calendar",
+      "en-US": "Calendar",
       "ja-JP": "カレンダー"
     },
     "description": {
       "default": "Displays events in the calendar view.",
+      "en-US": "Displays events in the calendar view.",
       "ja-JP": "イベントをカレンダーで表示します。"
     },
     "officeFabricIconFontName": "Calendar",

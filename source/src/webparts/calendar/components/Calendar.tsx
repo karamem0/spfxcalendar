@@ -76,13 +76,17 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
     return (
       <div className={styles.calendar}>
         {
-          this.state.error
-            ? <Office.MessageBar
-                messageBarType={Office.MessageBarType.error}
-                onDismiss={() => this.setState({ error: null })}>
+          (() => {
+            if (this.state.error) {
+              return (
+                <Office.MessageBar
+                  messageBarType={Office.MessageBarType.error}
+                  onDismiss={() => this.setState({ error: null })}>
                   {this.state.error}
-              </Office.MessageBar>
-            : null
+                </Office.MessageBar>
+              );
+            }
+          })()
         }
         <table>
           <thead>
@@ -109,7 +113,7 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
           <tbody>
             <tr className={styles.head}>
               {
-                strings.DayNames.map((name) => 
+                strings.DayNames.map((name) =>
                   <td className={styles.calendarhead}>
                     {name}
                   </td>
@@ -124,34 +128,38 @@ export class Calendar extends React.Component<ICalendarProps, ICalendarState> {
           </tbody>
         </table>
         {
-          this.state.isCalloutVisible
-            ? <Office.Callout
-                className={styles.callout}
-                target={this.dateButton}
-                ariaLabelledBy={this.calloutLabelId}
-                ariaDescribedBy={this.calloutDescriptionId}
-                onDismiss={() => this.setState({ isCalloutVisible: false })}>
-                <div id={this.calloutLabelId} className={styles.label}>
-                  <Office.IconButton
-                    iconProps={{ iconName: 'ChevronLeft' }}
-                    onClick={this.onPrevYear.bind(this)} />
-                  {this.state.date.getFullYear()}
-                  <Office.IconButton
-                    iconProps={{ iconName: 'ChevronRight' }}
-                    onClick={this.onNextYear.bind(this)} />
-                </div>
-                <div id={this.calloutDescriptionId} className={styles.description}>
-                  {
-                    strings.MonthShortNames.map((value, index) => 
-                      <Office.ActionButton
-                        onClick={this.onSetMonth.bind(this, index)}>
-                        {value}
-                      </Office.ActionButton>
-                    )
-                  }
-                </div>
-              </Office.Callout>
-            : null
+          (() => {
+            if (this.state.isCalloutVisible) {
+              return (
+                <Office.Callout
+                  className={styles.callout}
+                  target={this.dateButton}
+                  ariaLabelledBy={this.calloutLabelId}
+                  ariaDescribedBy={this.calloutDescriptionId}
+                  onDismiss={() => this.setState({ isCalloutVisible: false })}>
+                  <div id={this.calloutLabelId} className={styles.label}>
+                    <Office.IconButton
+                      iconProps={{ iconName: 'ChevronLeft' }}
+                      onClick={this.onPrevYear.bind(this)} />
+                    {this.state.date.getFullYear()}
+                    <Office.IconButton
+                      iconProps={{ iconName: 'ChevronRight' }}
+                      onClick={this.onNextYear.bind(this)} />
+                  </div>
+                  <div id={this.calloutDescriptionId} className={styles.description}>
+                    {
+                      strings.MonthShortNames.map((value, index) =>
+                        <Office.ActionButton
+                          onClick={this.onSetMonth.bind(this, index)}>
+                          {value}
+                        </Office.ActionButton>
+                      )
+                    }
+                  </div>
+                </Office.Callout>
+              );
+            }
+          })()
         }
         <CalendarPanelView
           item={this.state.itemView}
