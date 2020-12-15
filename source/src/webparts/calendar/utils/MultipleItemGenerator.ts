@@ -1,8 +1,8 @@
+import { DateTime } from "./DateTime";
 import { IEventItem } from "../components/IEventItem";
 import { EventItem } from "../models/EventItem";
-import { DateTime } from "./DateTime";
 
-export class MultipleItemGererator {
+export class MultipleItemGenerator {
 
   public static generate(item: EventItem): Array<IEventItem> {
     const result = new Array<IEventItem>();

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import * as Office from 'office-ui-fabric-react';
+import * as Fluent from '@fluentui/react';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -23,9 +23,9 @@ export class CalendarItem extends React.Component<ICalendarItemProps, ICalendarI
 
   public render(): React.ReactElement<ICalendarItemProps> {
     return (
-      <div className={styles.calendaritem}>
+      <div className={styles['calendar-item']}>
         <div className={styles.item}>
-          <Office.Link
+          <Fluent.Link
             href="javascript:void(0)"
             onClick={() => this.props.onItemSelect(this.props.item)}>
             {
@@ -38,7 +38,7 @@ export class CalendarItem extends React.Component<ICalendarItemProps, ICalendarI
                 ? this.props.item.title
                 : `(${strings.NoTitleLabel})`
             }
-          </Office.Link>
+          </Fluent.Link>
         </div>
       </div>
     );

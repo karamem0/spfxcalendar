@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import * as Office from 'office-ui-fabric-react';
+import * as Fluent from '@fluentui/react';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -31,7 +31,7 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
           (() => {
             if (this.props.item) {
               return (
-                <Office.Panel
+                <Fluent.Panel
                   className={styles.panel}
                   closeButtonAriaLabel="Close"
                   headerText={
@@ -49,18 +49,18 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                         (() => {
                           if (this.props.permission.canEdit || this.props.permission.canDelete) {
                             return (
-                              <Office.PrimaryButton
+                              <Fluent.PrimaryButton
                                 onClick={() => this.props.onEdit(this.props.item)}>
                                 {strings.EditButton}
-                              </Office.PrimaryButton>
+                              </Fluent.PrimaryButton>
                             );
                           }
                         })()
                       }
-                      <Office.DefaultButton
+                      <Fluent.DefaultButton
                         onClick={() => this.props.onCancel()}>
                         {strings.CancelButton}
-                      </Office.DefaultButton>
+                      </Fluent.DefaultButton>
                     </div>
                   }>
                   {
@@ -68,10 +68,10 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                       if (this.props.item.recurrence) {
                         return (
                           <p>
-                            <div className={styles.formlabel}>
-                              <Office.Icon iconName="Sync" title={strings.RecurrenceLabel} />
+                            <div className={styles['form-label']}>
+                              <Fluent.Icon iconName="Sync" title={strings.RecurrenceLabel} />
                             </div>
-                            <div className={styles.formcontrol}>
+                            <div className={styles['form-control']}>
                               {this.props.item.recurrenceText}
                             </div>
                           </p>
@@ -84,10 +84,10 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                       if (this.props.item.location) {
                         return (
                           <p>
-                            <div className={styles.formlabel}>
-                              <Office.Icon iconName="MapPin" title={strings.LocationLabel} />
+                            <div className={styles['form-label']}>
+                              <Fluent.Icon iconName="MapPin" title={strings.LocationLabel} />
                             </div>
-                            <div className={styles.formcontrol}>
+                            <div className={styles['form-control']}>
                               {this.props.item.location}
                             </div>
                           </p>
@@ -96,10 +96,10 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                     })()
                   }
                   <p>
-                    <div className={styles.formlabel}>
-                      <Office.Icon iconName="Calendar" title={strings.DateTimeLabel} />
+                    <div className={styles['form-label']}>
+                      <Fluent.Icon iconName="Calendar" title={strings.DateTimeLabel} />
                     </div>
-                    <div className={styles.formcontrol}>
+                    <div className={styles['form-control']}>
                       {
                         this.props.item.allDayEvent
                           ? new DateTime(this.props.item.beginDate).format(strings.DateFormat) + ' ~ ' +
@@ -109,7 +109,7 @@ export class CalendarPanelView extends React.Component<ICalendarPanelViewProps, 
                       }
                     </div>
                   </p>
-                </Office.Panel>
+                </Fluent.Panel>
               );
             }
           })()

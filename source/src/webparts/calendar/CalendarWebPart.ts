@@ -17,6 +17,8 @@ import {
   Calendar
 } from './components/Calendar';
 import { CalendarService } from './services/CalendarService';
+import { TeamsDarkStyle } from './styles/TeamsDarkStyle';
+import { TeamsDefaultStyle } from './styles/TeamsDefaultStyle';
 
 export interface ICalendarWebPartProps {
   listId: string;
@@ -32,7 +34,18 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
     const element: React.ReactElement<ICalendarProps> = React.createElement(
       Calendar,
       {
-        service: new CalendarService(this.context, this.properties.listId)
+        service: new CalendarService(this.context, this.properties.listId),
+        style: (() => {
+          if (this.context.sdks.microsoftTeams) {
+            if (this.context.sdks.microsoftTeams.context.theme == 'default') {
+              return new TeamsDefaultStyle();
+            }
+            if (this.context.sdks.microsoftTeams.context.theme == 'dark') {
+              return new TeamsDarkStyle();
+            }
+          }
+          return {};
+        })()
       }
     );
 
@@ -67,7 +80,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.5.4');
+    return Version.parse('1.5.5');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {

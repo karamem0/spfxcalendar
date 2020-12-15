@@ -14,7 +14,7 @@ import {
 import { RecurrenceData } from '../models/RecurrenceData';
 import { DateTime } from '../utils/DateTime';
 import { RecurrenceItemGenerator } from '../utils/RecurrenceItemGenerator';
-import { MultipleItemGererator } from '../utils/MultipleItemGenerator';
+import { MultipleItemGenerator } from '../utils/MultipleItemGenerator';
 
 export class CalendarService {
 
@@ -67,7 +67,7 @@ export class CalendarService {
           throw data.error;
         }
         data.value.forEach((value: any) =>
-          MultipleItemGererator
+          MultipleItemGenerator
             .generate(new EventItem(value))
             .forEach((item) => items.push(item)));
         return items;
@@ -101,7 +101,7 @@ export class CalendarService {
     }
     const response = await this.context.spHttpClient.get(
       this.context.pageContext.web.serverRelativeUrl +
-      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})` + 
+      `/_api/web/lists/getbyid(guid'${this.listId}')/items(${id})` +
       `?$select=*,EventType,RecurrenceData`,
       SPHttpClient.configurations.v1);
     const data = await response.json();

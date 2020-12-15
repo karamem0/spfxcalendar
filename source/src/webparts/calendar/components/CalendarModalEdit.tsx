@@ -1,17 +1,19 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import * as Office from 'office-ui-fabric-react';
+import * as Fluent from '@fluentui/react';
 
 import * as strings from 'CalendarWebPartStrings';
 
 import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
 import { EventItem } from '../models/EventItem';
+import { IStyle } from '../styles/IStyle';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarModalEditProps {
   item: IEventItem;
   permission: IPermission;
+  style: IStyle;
   onSave: (value: EventItem) => void;
   onCancel: () => void;
   onDelete: (id: number) => void;
@@ -27,22 +29,22 @@ export interface ICalendarModalEditState {
 
 export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, ICalendarModalEditState> {
 
-  private readonly calendarFormatter: Office.ICalendarFormatDateCallbacks = {
+  private readonly calendarFormatter: Fluent.ICalendarFormatDateCallbacks = {
     formatDay: (value: Date) => new DateTime(value).format(strings.DayFormat),
     formatMonthDayYear: (value: Date) => new DateTime(value).format(strings.DateFormat),
     formatMonthYear: (value: Date) => new DateTime(value).format(strings.YearMonthFormat),
     formatYear: (value: Date) => new DateTime(value).format(strings.YearFormat)
   };
-  private readonly calendarStrings: Office.IDatePickerStrings = {
+  private readonly calendarStrings: Fluent.IDatePickerStrings = {
     days: strings.DayNames,
     months: strings.MonthNames,
     shortDays: strings.DayShortNames,
     shortMonths: strings.MonthShortNames,
     goToToday: strings.GoToTodayLabel
   };
-  private readonly hourOptions: Array<Office.IDropdownOption> = strings.HourNames.map((value) => ({ key: value, text: value }));
-  private readonly minuteOptions: Array<Office.IDropdownOption> = strings.MinuteNames.map((value) => ({ key: value, text: value }));
-  private readonly titleId: string = Office.getId('title');
+  private readonly hourOptions: Array<Fluent.IDropdownOption> = strings.HourNames.map((value) => ({ key: value, text: value }));
+  private readonly minuteOptions: Array<Fluent.IDropdownOption> = strings.MinuteNames.map((value) => ({ key: value, text: value }));
+  private readonly titleId: string = Fluent.getId('title');
 
   constructor(props: ICalendarModalEditProps) {
     super(props);
@@ -72,7 +74,7 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
           (() => {
             if (this.props.item) {
               return (
-                <Office.Modal
+                <Fluent.Modal
                   className={styles.panel}
                   containerClassName={styles.modal}
                   isOpen={this.props.item != null}
@@ -80,7 +82,7 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                   onDismiss={() => this.props.onCancel()}>
                   <div className={styles.head}>
                     <span id={this.titleId} className={styles.title}>{strings.EditItemLabel}</span>
-                    <Office.IconButton
+                    <Fluent.IconButton
                       ariaLabel={strings.CloseButton}
                       className={styles.close}
                       iconProps={{ iconName: 'Cancel' }}
@@ -88,37 +90,38 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                   </div>
                   <div className={styles.body}>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Header" title={strings.TitleLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Header" title={strings.TitleLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
-                        <Office.TextField
+                      <div className={styles['form-control']}>
+                        <Fluent.TextField
                           value={this.state.title}
                           onChange={(event, value) => this.setState({ title: value })} />
                       </div>
                     </p>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="MapPin" title={strings.LocationLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="MapPin" title={strings.LocationLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
-                        <Office.TextField
+                      <div className={styles['form-control']}>
+                        <Fluent.TextField
                           value={this.state.location}
                           onChange={(event, value) => this.setState({ location: value })} />
                       </div>
                     </p>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Calendar" title={strings.DateTimeLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Calendar" title={strings.DateTimeLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
+                      <div className={styles['form-control']}>
                         <ul>
                           <li>
-                            <Office.DatePicker
+                            <Fluent.DatePicker
                               className={styles.date}
                               dateTimeFormatter={this.calendarFormatter}
                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                               strings={this.calendarStrings}
+                              styles={this.props.style.DatePickerStyles}
                               value={this.state.beginDate}
                               onSelectDate={(value) => this.setState({ beginDate: value })} />
                             {
@@ -126,8 +129,8 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                                 if (!this.state.allDayEvent) {
                                   return (
                                     <div className={styles.time}>
-                                      <div className={styles.timecontrol}>
-                                        <Office.Dropdown
+                                      <div className={styles['time-control']}>
+                                        <Fluent.Dropdown
                                           options={this.hourOptions}
                                           selectedKey={new DateTime(this.state.beginDate).format("HH")}
                                           onChange={(event, value) => {
@@ -136,9 +139,9 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                                             this.setState({ beginDate: date });
                                           }} />
                                       </div>
-                                      <div className={styles.timeseparator}>:</div>
-                                      <div className={styles.timecontrol}>
-                                        <Office.Dropdown
+                                      <div className={styles['time-separator']}>:</div>
+                                      <div className={styles['time-control']}>
+                                        <Fluent.Dropdown
                                           options={this.minuteOptions}
                                           selectedKey={new DateTime(this.state.beginDate).format("MM")}
                                           onChange={(event, value) => {
@@ -154,14 +157,15 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                             }
                           </li>
                           <li>
-                            <div className={styles.rangeseparator}>~</div>
+                            <div className={styles['range-separator']}>~</div>
                           </li>
                           <li>
-                            <Office.DatePicker
+                            <Fluent.DatePicker
                               className={styles.date}
                               dateTimeFormatter={this.calendarFormatter}
                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                               strings={this.calendarStrings}
+                              styles={this.props.style.DatePickerStyles}
                               value={this.state.endDate}
                               onSelectDate={(value) => this.setState({ endDate: value })} />
                             {
@@ -169,8 +173,8 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                                 if (!this.state.allDayEvent) {
                                   return (
                                     <div className={styles.time}>
-                                      <div className={styles.timecontrol}>
-                                        <Office.Dropdown
+                                      <div className={styles['time-control']}>
+                                        <Fluent.Dropdown
                                           options={this.hourOptions}
                                           selectedKey={new DateTime(this.state.endDate).format("HH")}
                                           onChange={(event, value) => {
@@ -179,9 +183,9 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                                             this.setState({ endDate: date });
                                           }} />
                                       </div>
-                                      <div className={styles.timeseparator}>:</div>
-                                      <div className={styles.timecontrol}>
-                                        <Office.Dropdown
+                                      <div className={styles['time-separator']}>:</div>
+                                      <div className={styles['time-control']}>
+                                        <Fluent.Dropdown
                                           options={this.minuteOptions}
                                           selectedKey={new DateTime(this.state.endDate).format("MM")}
                                           onChange={(event, value) => {
@@ -200,13 +204,13 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                       </div>
                     </p>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Clock" title={strings.AllDayEventLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Clock" title={strings.AllDayEventLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
+                      <div className={styles['form-control']}>
                         <ul>
                           <li>
-                            <Office.Toggle
+                            <Fluent.Toggle
                               checked={this.state.allDayEvent}
                               inlineLabel={true}
                               label={strings.AllDayEventLabel}
@@ -221,7 +225,7 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                       (() => {
                         if (this.props.permission.canEdit) {
                           return (
-                            <Office.PrimaryButton
+                            <Fluent.PrimaryButton
                               onClick={() => this.props.onSave({
                                 id: this.props.item.id,
                                 title: this.state.title,
@@ -234,30 +238,30 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                                 recurrenceData: null
                               })}>
                               {strings.SaveButton}
-                            </Office.PrimaryButton>
+                            </Fluent.PrimaryButton>
                           );
                         }
                       })()
                     }
-                    <Office.DefaultButton
+                    <Fluent.DefaultButton
                       onClick={() => this.props.onCancel()}>
                       {strings.CancelButton}
-                    </Office.DefaultButton>
+                    </Fluent.DefaultButton>
                     {
                       (() => {
                         if (this.props.permission.canDelete) {
                           return (
-                            <Office.PrimaryButton
+                            <Fluent.PrimaryButton
                               className={styles.delete}
                               onClick={() => this.props.onDelete(this.props.item.id)}>
                               {strings.DeleteButton}
-                            </Office.PrimaryButton>
+                            </Fluent.PrimaryButton>
                           );
                         }
                       })()
                     }
                   </div>
-                </Office.Modal>
+                </Fluent.Modal>
               );
             }
           })()
