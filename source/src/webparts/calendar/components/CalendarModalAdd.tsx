@@ -1,18 +1,20 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import * as Office from 'office-ui-fabric-react';
+import * as Fluent from '@fluentui/react';
 
 import * as strings from 'CalendarWebPartStrings';
 
 import { IEventItem } from './IEventItem';
 import { IRecurrenceData } from './IRecurrenceData';
 import { EventItem } from '../models/EventItem';
+import { IStyle } from '../styles/IStyle';
 import { DateTime } from '../utils/DateTime';
 import { RecurrenceDataGenerator } from '../utils/RecurrenceDataGenerator';
 import { RecurrenceEndDateGenerator } from '../utils/RecurrenceEndDateGenerator';
 
 export interface ICalendarModalAddProps {
   item: IEventItem;
+  style: IStyle;
   onSave: (value: EventItem) => void;
   onCancel: () => void;
 }
@@ -29,22 +31,22 @@ export interface ICalendarModalAddState {
 
 export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, ICalendarModalAddState> {
 
-  private readonly calendarFormatter: Office.ICalendarFormatDateCallbacks = {
+  private readonly calendarFormatter: Fluent.ICalendarFormatDateCallbacks = {
     formatDay: (value: Date) => new DateTime(value).format(strings.DayFormat),
     formatMonthDayYear: (value: Date) => new DateTime(value).format(strings.DateFormat),
     formatMonthYear: (value: Date) => new DateTime(value).format(strings.YearMonthFormat),
     formatYear: (value: Date) => new DateTime(value).format(strings.YearFormat)
   };
-  private readonly calendarStrings: Office.IDatePickerStrings = {
+  private readonly calendarStrings: Fluent.IDatePickerStrings = {
     days: strings.DayNames,
     months: strings.MonthNames,
     shortDays: strings.DayShortNames,
     shortMonths: strings.MonthShortNames,
     goToToday: strings.GoToTodayLabel
   };
-  private readonly hourOptions: Array<Office.IDropdownOption> = strings.HourNames.map((value) => ({ key: value, text: value }));
-  private readonly minuteOptions: Array<Office.IDropdownOption> = strings.MinuteNames.map((value) => ({ key: value, text: value }));
-  private readonly titleId: string = Office.getId('title');
+  private readonly hourOptions: Array<Fluent.IDropdownOption> = strings.HourNames.map((value) => ({ key: value, text: value }));
+  private readonly minuteOptions: Array<Fluent.IDropdownOption> = strings.MinuteNames.map((value) => ({ key: value, text: value }));
+  private readonly titleId: string = Fluent.getId('title');
 
   constructor(props: ICalendarModalAddProps) {
     super(props);
@@ -98,14 +100,14 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
           (() => {
             if (this.props.item) {
               return (
-                <Office.Modal
+                <Fluent.Modal
                   containerClassName={styles.modal}
                   isOpen={!!this.props.item}
                   titleAriaId={this.titleId}
                   onDismiss={() => this.props.onCancel()}>
                   <div className={styles.head}>
                     <span id={this.titleId} className={styles.title}>{strings.AddItemLabel}</span>
-                    <Office.IconButton
+                    <Fluent.IconButton
                       ariaLabel={strings.CloseButton}
                       className={styles.close}
                       iconProps={{ iconName: 'Cancel' }}
@@ -113,21 +115,21 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                   </div>
                   <div className={styles.body}>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Header" title={strings.TitleLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Header" title={strings.TitleLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
-                        <Office.TextField
+                      <div className={styles['form-control']}>
+                        <Fluent.TextField
                           value={this.state.title}
                           onChange={(event, value) => this.setState({ title: value })} />
                       </div>
                     </p>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="MapPin" title={strings.LocationLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="MapPin" title={strings.LocationLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
-                        <Office.TextField
+                      <div className={styles['form-control']}>
+                        <Fluent.TextField
                           value={this.state.location}
                           onChange={(event, value) => this.setState({ location: value })} />
                       </div>
@@ -137,21 +139,22 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                         if (!this.state.allDayEvent || !this.state.recurrence) {
                           return (
                             <p>
-                              <div className={styles.formlabel}>
-                                <Office.Icon iconName="Calendar" title={strings.DateTimeLabel} />
+                              <div className={styles['form-label']}>
+                                <Fluent.Icon iconName="Calendar" title={strings.DateTimeLabel} />
                               </div>
-                              <div className={styles.formcontrol}>
+                              <div className={styles['form-control']}>
                                 <ul>
                                   <li>
                                     {
                                       (() => {
                                         if (!this.state.recurrence) {
                                           return (
-                                            <Office.DatePicker
+                                            <Fluent.DatePicker
                                               className={styles.date}
                                               dateTimeFormatter={this.calendarFormatter}
                                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                               strings={this.calendarStrings}
+                                              styles={this.props.style.DatePickerStyles}
                                               value={this.state.beginDate}
                                               onSelectDate={(value) =>
                                                 this.setState({
@@ -166,8 +169,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                         if (!this.state.allDayEvent) {
                                           return (
                                             <div className={styles.time}>
-                                              <div className={styles.timecontrol}>
-                                                <Office.Dropdown
+                                              <div className={styles['time-control']}>
+                                                <Fluent.Dropdown
                                                   options={this.hourOptions}
                                                   selectedKey={new DateTime(this.state.beginDate).format("HH")}
                                                   onChange={(event, value) => {
@@ -176,9 +179,9 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                     this.setState({ beginDate: date });
                                                   }} />
                                               </div>
-                                              <div className={styles.timeseparator}>:</div>
-                                              <div className={styles.timecontrol}>
-                                                <Office.Dropdown
+                                              <div className={styles['time-separator']}>:</div>
+                                              <div className={styles['time-control']}>
+                                                <Fluent.Dropdown
                                                   options={this.minuteOptions}
                                                   selectedKey={new DateTime(this.state.beginDate).format("MM")}
                                                   onChange={(event, value) => {
@@ -194,19 +197,20 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                     }
                                   </li>
                                   <li>
-                                    <div className={styles.rangeseparator}>~</div>
+                                    <div className={styles['range-separator']}>~</div>
                                   </li>
                                   <li>
                                     {
                                       (() => {
                                         if (!this.state.recurrence) {
                                           return (
-                                            <Office.DatePicker
+                                            <Fluent.DatePicker
                                               className={styles.date}
                                               dateTimeFormatter={this.calendarFormatter}
                                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                               strings={this.calendarStrings}
                                               value={this.state.endDate}
+                                              styles={this.props.style.DatePickerStyles}
                                               onSelectDate={(value) =>
                                                 this.setState({
                                                   endDate: new DateTime(this.state.endDate).setDate(value).toDate()
@@ -220,8 +224,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                         if (!this.state.allDayEvent) {
                                           return (
                                             <div className={styles.time}>
-                                              <div className={styles.timecontrol}>
-                                                <Office.Dropdown
+                                              <div className={styles['time-control']}>
+                                                <Fluent.Dropdown
                                                   options={this.hourOptions}
                                                   selectedKey={new DateTime(this.state.endDate).format("HH")}
                                                   onChange={(event, value) => {
@@ -238,9 +242,9 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                     }
                                                   }} />
                                               </div>
-                                              <div className={styles.timeseparator}>:</div>
-                                              <div className={styles.timecontrol}>
-                                                <Office.Dropdown
+                                              <div className={styles['time-separator']}>:</div>
+                                              <div className={styles['time-control']}>
+                                                <Fluent.Dropdown
                                                   options={this.minuteOptions}
                                                   selectedKey={new DateTime(this.state.endDate).format("MM")}
                                                   onChange={(event, value) => {
@@ -271,13 +275,13 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                       })()
                     }
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Clock" title={strings.AllDayEventLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Clock" title={strings.AllDayEventLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
+                      <div className={styles['form-control']}>
                         <ul>
                           <li>
-                            <Office.Toggle
+                            <Fluent.Toggle
                               checked={this.state.allDayEvent}
                               inlineLabel={true}
                               label={strings.AllDayEventLabel}
@@ -287,13 +291,13 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                       </div>
                     </p>
                     <p>
-                      <div className={styles.formlabel}>
-                        <Office.Icon iconName="Sync" title={strings.RecurrenceLabel} />
+                      <div className={styles['form-label']}>
+                        <Fluent.Icon iconName="Sync" title={strings.RecurrenceLabel} />
                       </div>
-                      <div className={styles.formcontrol}>
+                      <div className={styles['form-control']}>
                         <ul>
                           <li>
-                            <Office.Toggle
+                            <Fluent.Toggle
                               checked={this.state.recurrence}
                               inlineLabel={true}
                               label={strings.RecurrenceLabel}
@@ -306,7 +310,7 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                   <React.Fragment>
                                     <li>
                                       <div className={styles.repeat}>
-                                        <Office.ChoiceGroup
+                                        <Fluent.ChoiceGroup
                                           defaultSelectedKey={this.state.recurrenceData.repeatOption}
                                           options={[
                                             { key: 'daily', text: strings.DailyLabel },
@@ -328,7 +332,7 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                             switch (this.state.recurrenceData.repeatOption) {
                                               case 'daily':
                                                 return (
-                                                  <Office.ChoiceGroup
+                                                  <Fluent.ChoiceGroup
                                                     defaultSelectedKey={this.state.recurrenceData.dailyOption}
                                                     options={[
                                                       {
@@ -339,8 +343,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                             <div className={styles.flex}>
                                                               {render!(props)}
                                                               {strings.DailyFrequencyPrefixLabel}
-                                                              <Office.SpinButton
-                                                                className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                              <Fluent.SpinButton
+                                                                className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                                 defaultValue={this.state.recurrenceData.dailyFrequency.toString()}
                                                                 max={99}
                                                                 min={1}
@@ -397,8 +401,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                   <React.Fragment>
                                                     <div className={styles.flex}>
                                                       {strings.WeeklyFrequencyPrefixLabel}
-                                                      <Office.SpinButton
-                                                        className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                      <Fluent.SpinButton
+                                                        className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                         defaultValue={this.state.recurrenceData.weeklyFrequency.toString()}
                                                         max={99}
                                                         min={1}
@@ -437,14 +441,14 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                         }} />
                                                       {strings.WeeklyFrequencySuffixLabel}
                                                     </div>
-                                                    <div className={Office.mergeStyles(styles.flex, { margin: '1em 0 0 0' })}>
+                                                    <div className={Fluent.mergeStyles(styles.flex, { margin: '1em 0 0 0' })}>
                                                       {
                                                         (() => {
                                                           const elements = [];
                                                           for (let index = 0; index < 7; index++) {
                                                             elements.push(
-                                                              <Office.Checkbox
-                                                                className={Office.mergeStyles({ margin: '0 .5em .5em 0' })}
+                                                              <Fluent.Checkbox
+                                                                className={Fluent.mergeStyles({ margin: '0 .5em .5em 0' })}
                                                                 checked={this.state.recurrenceData.weeklyOptions[index]}
                                                                 label={strings.DayNames[index]}
                                                                 onChange={(element, checked) => {
@@ -470,8 +474,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                   <React.Fragment>
                                                     <div className={styles.flex}>
                                                       {strings.MonthlyFrequencyPrefixLabel}
-                                                      <Office.SpinButton
-                                                        className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                      <Fluent.SpinButton
+                                                        className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                         defaultValue={this.state.recurrenceData.monthlyFrequency.toString()}
                                                         max={99}
                                                         min={1}
@@ -510,7 +514,7 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                         }} />
                                                       {strings.MonthlyFrequencySuffixLabel}
                                                     </div>
-                                                    <Office.ChoiceGroup
+                                                    <Fluent.ChoiceGroup
                                                       defaultSelectedKey={this.state.recurrenceData.monthlyOption}
                                                       options={[
                                                         {
@@ -521,8 +525,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                               <div className={styles.flex}>
                                                                 {render!(props)}
                                                                 {strings.MonthlyDayPrefixLabel}
-                                                                <Office.SpinButton
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                                <Fluent.SpinButton
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                                   defaultValue={this.state.recurrenceData.monthlyDay.toString()}
                                                                   max={31}
                                                                   min={1}
@@ -572,8 +576,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                               <div className={styles.flex}>
                                                                 {render!(props)}
                                                                 {strings.MonthlyByDayPrefixLabel}
-                                                                <Office.Dropdown
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                                <Fluent.Dropdown
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                                   defaultSelectedKey={this.state.recurrenceData.monthlyByDayNumber}
                                                                   options={[
                                                                     { key: 'first', text: strings.ByDayNumberNames[0] },
@@ -589,8 +593,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                                         monthlyByDayNumber: value.key.toString()
                                                                       }
                                                                     })} />
-                                                                <Office.Dropdown
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                                <Fluent.Dropdown
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                                   defaultSelectedKey={this.state.recurrenceData.monthlyByDayDay}
                                                                   options={[
                                                                     { key: 'day', text: strings.ByDayDayNames[0] },
@@ -631,8 +635,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                   <React.Fragment>
                                                     <div className={styles.flex}>
                                                       {strings.YearlyMonthPrefixLabel}
-                                                      <Office.Dropdown
-                                                        className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                      <Fluent.Dropdown
+                                                        className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                         defaultSelectedKey={this.state.recurrenceData.yearlyMonth.toString()}
                                                         options={
                                                           strings.MonthNames.map((value, number) => {
@@ -651,7 +655,7 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                           })} />
                                                       {strings.YearlyMonthSuffixLabel}
                                                     </div>
-                                                    <Office.ChoiceGroup
+                                                    <Fluent.ChoiceGroup
                                                       defaultSelectedKey={this.state.recurrenceData.yearlyOption}
                                                       options={[
                                                         {
@@ -662,8 +666,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                               <div className={styles.flex}>
                                                                 {render!(props)}
                                                                 {strings.YearlyDayPrefixLabel}
-                                                                <Office.SpinButton
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                                <Fluent.SpinButton
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                                   defaultValue={this.state.recurrenceData.yearlyDay.toString()}
                                                                   max={31}
                                                                   min={1}
@@ -713,8 +717,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                               <div className={styles.flex}>
                                                                 {render!(props)}
                                                                 {strings.YearlyByDayPrefixLabel}
-                                                                <Office.Dropdown
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                                <Fluent.Dropdown
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                                   defaultSelectedKey={this.state.recurrenceData.yearlyByDayNumber}
                                                                   options={[
                                                                     { key: 'first', text: strings.ByDayNumberNames[0] },
@@ -730,8 +734,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                                         yearlyByDayNumber: value.key.toString()
                                                                       }
                                                                     })} />
-                                                                <Office.Dropdown
-                                                                  className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                                <Fluent.Dropdown
+                                                                  className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                                   defaultSelectedKey={this.state.recurrenceData.yearlyByDayDay}
                                                                   options={[
                                                                     { key: 'day', text: strings.ByDayDayNames[0] },
@@ -773,15 +777,16 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                       </div>
                                     </li>
                                     <li>
-                                      <Office.DatePicker
+                                      <Fluent.DatePicker
                                         className={styles.date}
                                         dateTimeFormatter={this.calendarFormatter}
                                         formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                         label={strings.StartDateLabel}
                                         strings={this.calendarStrings}
+                                        styles={this.props.style.DatePickerStyles}
                                         value={this.state.beginDate}
                                         onSelectDate={(value) => this.setState({ beginDate: value })} />
-                                      <Office.ChoiceGroup
+                                      <Fluent.ChoiceGroup
                                         className={styles.rule}
                                         defaultSelectedKey={this.state.recurrenceData.ruleOption}
                                         options={[
@@ -794,8 +799,8 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                 <div className={styles.flex}>
                                                   {render!(props)}
                                                   {strings.RepeatInstancePrefixLabel}
-                                                  <Office.SpinButton
-                                                    className={Office.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
+                                                  <Fluent.SpinButton
+                                                    className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em', width: '160px' })}
                                                     defaultValue={this.state.recurrenceData.repeatInstance.toString()}
                                                     max={999}
                                                     min={1}
@@ -845,11 +850,12 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                 <div className={styles.flex}>
                                                   {render!(props)}
                                                   {strings.EndDateLabel}
-                                                  <Office.DatePicker
-                                                    className={Office.mergeStyles({ margin: '0 .5em 0 .5em' })}
+                                                  <Fluent.DatePicker
+                                                    className={Fluent.mergeStyles({ margin: '0 .5em 0 .5em' })}
                                                     dateTimeFormatter={this.calendarFormatter}
                                                     formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                                     strings={this.calendarStrings}
+                                                    styles={this.props.style.DatePickerStyles}
                                                     value={this.state.recurrenceData.windowEnd}
                                                     onSelectDate={(value) =>
                                                       this.setState({
@@ -881,7 +887,7 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                     </p>
                   </div>
                   <div className={styles.foot}>
-                    <Office.PrimaryButton
+                    <Fluent.PrimaryButton
                       onClick={() => {
                         this.props.onSave({
                           id: 0,
@@ -901,13 +907,13 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                         });
                       }}>
                       {strings.SaveButton}
-                    </Office.PrimaryButton>
-                    <Office.DefaultButton
+                    </Fluent.PrimaryButton>
+                    <Fluent.DefaultButton
                       onClick={() => this.props.onCancel()}>
                       {strings.CancelButton}
-                    </Office.DefaultButton>
+                    </Fluent.DefaultButton>
                   </div>
-                </Office.Modal>
+                </Fluent.Modal>
               );
             }
           })()

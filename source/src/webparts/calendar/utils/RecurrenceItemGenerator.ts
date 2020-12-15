@@ -1,9 +1,9 @@
 import * as strings from 'CalendarWebPartStrings';
 
+import { DateTime } from './DateTime';
 import { IEventItem } from '../components/IEventItem';
 import { EventItem } from '../models/EventItem';
 import { RecurrenceData } from '../models/RecurrenceData';
-import { DateTime } from './DateTime';
 
 export class RecurrenceItemGenerator {
 

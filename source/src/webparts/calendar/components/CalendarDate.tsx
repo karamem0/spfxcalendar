@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
-import * as Office from 'office-ui-fabric-react';
+import * as Fluent from '@fluentui/react';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -45,7 +45,7 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
       });
     return (
       <td
-        className={styles.calendardate}
+        className={styles['calendar-date']}
         onMouseEnter={() => this.setState({ isAddVisible: true })}
         onMouseLeave={() => this.setState({ isAddVisible: false })}>
         <div className={styles.head}>
@@ -55,12 +55,12 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
             </div>
           </div>
           <div className={styles.add}>
-            <div className={styles.addinner}>
+            <div className={styles['add-inner']}>
               {
                 (() => {
                   if (this.props.permission.canAdd && this.state.isAddVisible) {
                     return (
-                      <Office.Link
+                      <Fluent.Link
                         href="javascript:void(0)"
                         onClick={() =>
                           this.props.onItemAdd({
@@ -74,9 +74,9 @@ export class CalendarDate extends React.Component<ICalendarDateProps, ICalendarD
                             recurrenceText: null
                           })
                         }>
-                        <Office.Icon iconName="Add" />
+                        <Fluent.Icon iconName="Add" />
                         <span>{strings.AddButton}</span>
-                      </Office.Link>
+                      </Fluent.Link>
                     );
                   }
                 })()
