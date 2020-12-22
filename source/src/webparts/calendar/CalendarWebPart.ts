@@ -17,8 +17,8 @@ import {
   Calendar
 } from './components/Calendar';
 import { CalendarService } from './services/CalendarService';
-import { TeamsDarkStyle } from './styles/TeamsDarkStyle';
-import { TeamsDefaultStyle } from './styles/TeamsDefaultStyle';
+import { TeamsDarkTheme } from './styles/TeamsDarkTheme';
+import { TeamsDefaultTheme } from './styles/TeamsDefaultTheme';
 
 export interface ICalendarWebPartProps {
   listId: string;
@@ -35,16 +35,16 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
       Calendar,
       {
         service: new CalendarService(this.context, this.properties.listId),
-        style: (() => {
+        theme: (() => {
           if (this.context.sdks.microsoftTeams) {
             if (this.context.sdks.microsoftTeams.context.theme == 'default') {
-              return new TeamsDefaultStyle();
+              return TeamsDefaultTheme;
             }
             if (this.context.sdks.microsoftTeams.context.theme == 'dark') {
-              return new TeamsDarkStyle();
+              return TeamsDarkTheme;
             }
           }
-          return {};
+          return null;
         })()
       }
     );
@@ -80,7 +80,7 @@ export default class CalendarWebPart extends BaseClientSideWebPart<ICalendarWebP
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.5.5');
+    return Version.parse('1.5.6');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {

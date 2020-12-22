@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 import * as Fluent from '@fluentui/react';
+import { Theme } from '@fluentui/react-theme-provider';
 
 import * as strings from 'CalendarWebPartStrings';
 
@@ -15,12 +16,11 @@ import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
 import { EventItem } from '../models/EventItem';
 import { CalendarService } from '../services/CalendarService';
-import { IStyle } from '../styles/IStyle';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarTableProps {
   service: CalendarService;
-  style: IStyle;
+  theme: Theme;
 }
 
 export interface ICalendarTableState {
@@ -169,13 +169,13 @@ export class CalendarTable extends React.Component<ICalendarTableProps, ICalenda
           onEdit={(value) => this.setState({ itemView: null, itemEdit: value })}
           onCancel={() => this.onCancel()} />
         <CalendarModalAdd
+          theme={this.props.theme}
           item={this.state.itemAdd}
-          style={this.props.style}
           onSave={(value) => this.onItemAdd(value)}
           onCancel={() => this.onCancel()} />
         <CalendarModalEdit
+          theme={this.props.theme}
           item={this.state.itemEdit}
-          style={this.props.style}
           permission={this.state.permission}
           onSave={(value) => this.onItemEdit(value)}
           onCancel={() => this.onCancel()}

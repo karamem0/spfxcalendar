@@ -1,20 +1,20 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 import * as Fluent from '@fluentui/react';
+import { Theme } from '@fluentui/react-theme-provider';
 
 import * as strings from 'CalendarWebPartStrings';
 
 import { IEventItem } from './IEventItem';
 import { IRecurrenceData } from './IRecurrenceData';
 import { EventItem } from '../models/EventItem';
-import { IStyle } from '../styles/IStyle';
 import { DateTime } from '../utils/DateTime';
 import { RecurrenceDataGenerator } from '../utils/RecurrenceDataGenerator';
 import { RecurrenceEndDateGenerator } from '../utils/RecurrenceEndDateGenerator';
 
 export interface ICalendarModalAddProps {
+  theme: Theme;
   item: IEventItem;
-  style: IStyle;
   onSave: (value: EventItem) => void;
   onCancel: () => void;
 }
@@ -154,7 +154,11 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                               dateTimeFormatter={this.calendarFormatter}
                                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                               strings={this.calendarStrings}
-                                              styles={this.props.style.DatePickerStyles}
+                                              styles={
+                                                this.props.theme
+                                                  ? this.props.theme.components.DatePicker.styles
+                                                  : null
+                                              }
                                               value={this.state.beginDate}
                                               onSelectDate={(value) =>
                                                 this.setState({
@@ -210,7 +214,11 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                               strings={this.calendarStrings}
                                               value={this.state.endDate}
-                                              styles={this.props.style.DatePickerStyles}
+                                              styles={
+                                                this.props.theme
+                                                  ? this.props.theme.components.DatePicker.styles
+                                                  : null
+                                              }
                                               onSelectDate={(value) =>
                                                 this.setState({
                                                   endDate: new DateTime(this.state.endDate).setDate(value).toDate()
@@ -783,7 +791,11 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                         formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                         label={strings.StartDateLabel}
                                         strings={this.calendarStrings}
-                                        styles={this.props.style.DatePickerStyles}
+                                        styles={
+                                          this.props.theme
+                                            ? this.props.theme.components.DatePicker.styles
+                                            : null
+                                        }
                                         value={this.state.beginDate}
                                         onSelectDate={(value) => this.setState({ beginDate: value })} />
                                       <Fluent.ChoiceGroup
@@ -855,7 +867,11 @@ export class CalendarModalAdd extends React.Component<ICalendarModalAddProps, IC
                                                     dateTimeFormatter={this.calendarFormatter}
                                                     formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                                                     strings={this.calendarStrings}
-                                                    styles={this.props.style.DatePickerStyles}
+                                                    styles={
+                                                      this.props.theme
+                                                        ? this.props.theme.components.DatePicker.styles
+                                                        : null
+                                                    }
                                                     value={this.state.recurrenceData.windowEnd}
                                                     onSelectDate={(value) =>
                                                       this.setState({
