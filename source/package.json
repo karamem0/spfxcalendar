@@ -1,6 +1,6 @@
 {
   "name": "spfxcalendar",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "private": true,
   "main": "lib/index.js",
   "engines": {
@@ -13,7 +13,8 @@
     "package": "gulp clean && gulp bundle --ship && gulp package-solution --ship"
   },
   "dependencies": {
-    "@fluentui/react": "^7.139.1",
+    "@fluentui/react": "^7.155.0",
+    "@fluentui/react-theme-provider": "^0.18.0",
     "@microsoft/sp-core-library": "1.11.0",
     "@microsoft/sp-lodash-subset": "1.11.0",
     "@microsoft/sp-office-ui-fabric-core": "1.11.0",
@@ -23,10 +24,10 @@
     "@types/react": "16.8.8",
     "@types/react-dom": "16.8.3",
     "@types/webpack-env": "1.13.1",
-    "@types/xml2js": "^0.4.5",
+    "@types/xml2js": "^0.4.7",
     "react": "16.8.5",
     "react-dom": "16.8.5",
-    "uuid": "^8.3.1",
+    "uuid": "^8.3.2",
     "xml2js": "^0.4.23"
   },
   "resolutions": {

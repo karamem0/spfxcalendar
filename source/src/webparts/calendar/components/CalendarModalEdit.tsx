@@ -1,19 +1,19 @@
 import * as React from 'react';
 import styles from './Calendar.module.scss';
 import * as Fluent from '@fluentui/react';
+import { Theme } from '@fluentui/react-theme-provider';
 
 import * as strings from 'CalendarWebPartStrings';
 
 import { IEventItem } from './IEventItem';
 import { IPermission } from './IPermission';
 import { EventItem } from '../models/EventItem';
-import { IStyle } from '../styles/IStyle';
 import { DateTime } from '../utils/DateTime';
 
 export interface ICalendarModalEditProps {
+  theme: Theme;
   item: IEventItem;
   permission: IPermission;
-  style: IStyle;
   onSave: (value: EventItem) => void;
   onCancel: () => void;
   onDelete: (id: number) => void;
@@ -121,7 +121,11 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                               dateTimeFormatter={this.calendarFormatter}
                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                               strings={this.calendarStrings}
-                              styles={this.props.style.DatePickerStyles}
+                              styles={
+                                this.props.theme
+                                  ? this.props.theme.components.DatePicker.styles
+                                  : null
+                              }
                               value={this.state.beginDate}
                               onSelectDate={(value) => this.setState({ beginDate: value })} />
                             {
@@ -165,7 +169,11 @@ export class CalendarModalEdit extends React.Component<ICalendarModalEditProps, 
                               dateTimeFormatter={this.calendarFormatter}
                               formatDate={(value) => new DateTime(value).format(strings.DateFormat)}
                               strings={this.calendarStrings}
-                              styles={this.props.style.DatePickerStyles}
+                              styles={
+                                this.props.theme
+                                  ? this.props.theme.components.DatePicker.styles
+                                  : null
+                              }
                               value={this.state.endDate}
                               onSelectDate={(value) => this.setState({ endDate: value })} />
                             {
